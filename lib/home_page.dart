@@ -1,12 +1,65 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+// Convert to StatefulWidget to manage page state
+class HomePage extends StatefulWidget {
   final String username;
   
   const HomePage({super.key, required this.username});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // List of profiles with their images
+  final List<Map<String, String>> _profiles = [
+    {
+      'name': 'Stephen',
+      'card': 'images/stephen_card.png',
+      'about': 'images/stephen_about.png',
+    },
+    {
+      'name': 'Jeff',
+      'card': 'images/jeff_card.png',
+      'about': 'images/jeff_about.png',
+    },
+    {
+      'name': 'Dave',
+      'card': 'images/dave_card.png',
+      'about': 'images/dave_about.png',
+    },
+  ];
+  
+  // Current profile index
+  int _currentIndex = 0;
+  
+  // Navigate to the next profile
+  void _nextProfile() {
+    setState(() {
+      if (_currentIndex < _profiles.length - 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0; // Loop back to first profile
+      }
+    });
+  }
+  
+  // Navigate to the previous profile
+  void _previousProfile() {
+    setState(() {
+      if (_currentIndex > 0) {
+        _currentIndex--;
+      } else {
+        _currentIndex = _profiles.length - 1; // Loop to last profile
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Get the current profile
+    final currentProfile = _profiles[_currentIndex];
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF9F5F2),
       appBar: PreferredSize(
@@ -97,16 +150,15 @@ class HomePage extends StatelessWidget {
       
       body: Stack(
         children: [
-          // Main content area with Stephen's card and about images
+          // Main content area with profile cards
           Padding(
-            // Reduced padding to give more space for the images
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-            child: SingleChildScrollView( // Removed Center widget to prevent horizontal centering
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start, // Added this to align children to the left
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title text "Pick Your Wingman" - Now left-aligned
+                  // Title text "Pick Your Wingman"
                   const Text(
                     "Pick Your Wingman",
                     style: TextStyle(
@@ -116,34 +168,48 @@ class HomePage extends StatelessWidget {
                       color: Colors.black,
                       letterSpacing: 1.2,
                     ),
-                    textAlign: TextAlign.left, // Explicitly set left alignment
+                    textAlign: TextAlign.left,
                   ),
                   
                   const SizedBox(height: 24),
                   
-                  // Stephen's card image - Made bigger
-                  Container(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
-                    ),
-                    child: Image.asset(
-                      'images/stephen_card.png',
-                      width: double.infinity,
-                      fit: BoxFit.contain,
+                  // Profile card image - with animation
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: Container(
+                      key: ValueKey<String>(currentProfile['card']!),
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.45,
+                      ),
+                      child: Image.asset(
+                        currentProfile['card']!,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   
                   const SizedBox(height: 16),
                   
-                  // Stephen's about image - Made bigger
-                  Container(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.4, // 40% of screen height
-                    ),
-                    child: Image.asset(
-                      'images/stephen_about.png',
-                      width: double.infinity,
-                      fit: BoxFit.contain,
+                  // Profile about image - with animation
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: Container(
+                      key: ValueKey<String>(currentProfile['about']!),
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      child: Image.asset(
+                        currentProfile['about']!,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   
@@ -158,27 +224,24 @@ class HomePage extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 60, // Positioned above where the nav bar would be
+            bottom: 60,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left arrow button - Now using image asset
+                  // Left arrow button - Now with previous functionality
                   GestureDetector(
-                    onTap: () {
-                      // Left arrow action (empty for now)
-                    },
+                    onTap: _previousProfile, // Navigate to previous profile
                     child: Image.asset(
                       'images/left_button.png',
                       width: 70,
                       height: 70,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback to the original button if image fails to load
                         return _buildPixelatedButton(
                           icon: Icons.chevron_left,
-                          onPressed: () {},
+                          onPressed: _previousProfile,
                         );
                       },
                     ),
@@ -199,21 +262,18 @@ class HomePage extends StatelessWidget {
                     },
                   ),
                   
-                  // Right arrow button - Now using image asset
+                  // Right arrow button - Now with next functionality
                   GestureDetector(
-                    onTap: () {
-                      // Right arrow action (empty for now)
-                    },
+                    onTap: _nextProfile, // Navigate to next profile
                     child: Image.asset(
                       'images/right_button.png',
                       width: 70,
                       height: 70,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback to the original button if image fails to load
                         return _buildPixelatedButton(
                           icon: Icons.chevron_right,
-                          onPressed: () {},
+                          onPressed: _nextProfile,
                         );
                       },
                     ),
