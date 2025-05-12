@@ -97,30 +97,45 @@ class HomePage extends StatelessWidget {
       
       body: Stack(
         children: [
-          // Main content area (can be populated later)
+          // Main content area with Stephen's card and about images
           Padding(
-            padding: const EdgeInsets.all(24.0),
+            // Reduced padding to give more space for the images
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Hello, $username!",
-                    style: const TextStyle(
-                      fontFamily: 'Futura',
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Stephen's card image - Made bigger
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
+                      ),
+                      child: Image.asset(
+                        'images/stephen_card.png',
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Your main content will appear here",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Stephen's about image - Made bigger
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4, // 40% of screen height
+                      ),
+                      child: Image.asset(
+                        'images/stephen_about.png',
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                ],
+                    
+                    // Add extra space at bottom
+                    const SizedBox(height: 160),
+                  ],
+                ),
               ),
             ),
           ),

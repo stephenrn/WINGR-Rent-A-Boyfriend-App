@@ -63,6 +63,8 @@ flutter:
     - images/pixel_heart.png  # Add this line
     - images/left_button.png   # Add new button images
     - images/right_button.png  # Add new button images
+    - images/stephen_card.png  # Add Stephen's card image
+    - images/stephen_about.png  # Add Stephen's about image
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
