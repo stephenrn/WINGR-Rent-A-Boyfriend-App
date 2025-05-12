@@ -101,41 +101,55 @@ class HomePage extends StatelessWidget {
           Padding(
             // Reduced padding to give more space for the images
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Stephen's card image - Made bigger
-                    Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
-                      ),
-                      child: Image.asset(
-                        'images/stephen_card.png',
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                      ),
+            child: SingleChildScrollView( // Removed Center widget to prevent horizontal centering
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start, // Added this to align children to the left
+                children: [
+                  // Title text "Pick Your Wingman" - Now left-aligned
+                  const Text(
+                    "Pick Your Wingman",
+                    style: TextStyle(
+                      fontFamily: 'Futura',
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      letterSpacing: 1.2,
                     ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Stephen's about image - Made bigger
-                    Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4, // 40% of screen height
-                      ),
-                      child: Image.asset(
-                        'images/stephen_about.png',
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                      ),
+                    textAlign: TextAlign.left, // Explicitly set left alignment
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Stephen's card image - Made bigger
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
                     ),
-                    
-                    // Add extra space at bottom
-                    const SizedBox(height: 160),
-                  ],
-                ),
+                    child: Image.asset(
+                      'images/stephen_card.png',
+                      width: double.infinity,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Stephen's about image - Made bigger
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.4, // 40% of screen height
+                    ),
+                    child: Image.asset(
+                      'images/stephen_about.png',
+                      width: double.infinity,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  
+                  // Add extra space at bottom
+                  const SizedBox(height: 160),
+                ],
               ),
             ),
           ),
@@ -144,7 +158,7 @@ class HomePage extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 140, // Positioned above where the nav bar would be
+            bottom: 60, // Positioned above where the nav bar would be
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
