@@ -33,9 +33,13 @@ class _HomePageState extends State<HomePage> {
   // Current profile index
   int _currentIndex = 0;
   
+  // Track navigation direction for animation
+  bool _isNavigatingForward = true;
+  
   // Navigate to the next profile
   void _nextProfile() {
     setState(() {
+      _isNavigatingForward = true;  // Set direction for animation
       if (_currentIndex < _profiles.length - 1) {
         _currentIndex++;
       } else {
@@ -47,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   // Navigate to the previous profile
   void _previousProfile() {
     setState(() {
+      _isNavigatingForward = false;  // Set direction for animation
       if (_currentIndex > 0) {
         _currentIndex--;
       } else {
@@ -61,7 +66,9 @@ class _HomePageState extends State<HomePage> {
     final currentProfile = _profiles[_currentIndex];
     
     return Scaffold(
+      // Use a solid color background as fallback for the missing image
       backgroundColor: const Color(0xFFF9F5F2),
+      // Use decoration container for appBar to maintain its styling
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
@@ -148,9 +155,19 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       
+      // Replace Container with background image with a safer implementation
       body: Stack(
         children: [
-          // Main content area with profile cards
+          // Background layer - Try to load image but fallback to solid color
+          Container(
+            decoration: BoxDecoration(
+              // Use a solid color that matches your app's theme
+              color: const Color(0xFFF9F5F2),
+              image: _tryLoadBackgroundImage(),
+            ),
+          ),
+
+          // Main content container
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
             child: SingleChildScrollView(
@@ -173,11 +190,23 @@ class _HomePageState extends State<HomePage> {
                   
                   const SizedBox(height: 24),
                   
-                  // Profile card image - with animation
+                  // Profile card image with slide animation
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (Widget child, Animation<double> animation) {
-                      return FadeTransition(opacity: animation, child: child);
+                      // Slide animation based on navigation direction
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: _isNavigatingForward 
+                              ? const Offset(1.0, 0.0)  // Right to left
+                              : const Offset(-1.0, 0.0), // Left to right
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOut,
+                        )),
+                        child: child,
+                      );
                     },
                     child: Container(
                       key: ValueKey<String>(currentProfile['card']!),
@@ -194,11 +223,23 @@ class _HomePageState extends State<HomePage> {
                   
                   const SizedBox(height: 16),
                   
-                  // Profile about image - with animation
+                  // Profile about image with slide animation
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (Widget child, Animation<double> animation) {
-                      return FadeTransition(opacity: animation, child: child);
+                      // Slide animation based on navigation direction
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: _isNavigatingForward 
+                              ? const Offset(1.0, 0.0)  // Right to left
+                              : const Offset(-1.0, 0.0), // Left to right
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOut,
+                        )),
+                        child: child,
+                      );
                     },
                     child: Container(
                       key: ValueKey<String>(currentProfile['about']!),
@@ -224,7 +265,7 @@ class _HomePageState extends State<HomePage> {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 60,
+            bottom: 130,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
@@ -285,6 +326,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+  
+  // Try to load the background image but handle error gracefully
+  DecorationImage? _tryLoadBackgroundImage() {
+    try {
+      return const DecorationImage(
+        image: AssetImage('images/picker_background.png'),
+        fit: BoxFit.cover,
+      );
+    } catch (e) {
+      // Return null if the image can't be loaded
+      return null;
+    }
   }
   
   // Custom pixelated button

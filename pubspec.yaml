@@ -69,6 +69,7 @@ flutter:
     - images/jeff_about.png
     - images/dave_card.png      # Add Dave's images
     - images/dave_about.png
+    - images/picker_background.png  # Add the background image
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
