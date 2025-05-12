@@ -1,3 +1,15 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Update these if needed but don't specify NDK version here
+    }
+}
+
 allprojects {
     repositories {
         google()

@@ -8,7 +8,10 @@ plugins {
 android {
     namespace = "com.example.wingr"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    
+    // Use the default NDK version from Flutter instead of a specific version
+    // This ensures compatibility with your installed Android SDK
+    ndkVersion = flutter.ndkVersion  // Changed from specific version to Flutter's default
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
