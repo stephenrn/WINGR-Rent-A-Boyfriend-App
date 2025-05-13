@@ -21,7 +21,7 @@ class WingmanDashboardPage extends StatefulWidget {
 
 class _WingmanDashboardPageState extends State<WingmanDashboardPage> with TickerProviderStateMixin {
   late TabController _tabController;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week; // Changed from CalendarFormat.month to week
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   
@@ -348,7 +348,13 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         child: Container(
           decoration: const BoxDecoration(
             color: Color(0xFFF6FF52), // Yellow background
-            // Removed border from here
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(0, 4),
+                blurRadius: 4,
+              ),
+            ],
           ),
           child: SafeArea(
             child: AppBar(
@@ -365,23 +371,28 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   letterSpacing: 1,
                 ),
               ),
-              // Remove the leading property and move close button to actions
               automaticallyImplyLeading: false,
               actions: [
-                // Close button now on the right side and bigger
                 Container(
                   margin: const EdgeInsets.only(right: 16.0),
-                  width: 60, // Make bigger
-                  height: 60, // Make bigger
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Image.asset(
-                        'images/closeButton.png',
-                        width: 60,
-                        height: 60,
-                      ),
+                  width: 60,
+                  height: 60,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black38,
+                          offset: Offset(0, 2),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.black, size: 28),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
                 ),
@@ -394,7 +405,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       // Body now contains both TabBar and TabBarView
       body: Column(
         children: [
-          // TabBar moved from AppBar to body
+          // TabBar with more modern styling
           Container(
             color: const Color(0xFFF6FF52), // Yellow background to match AppBar
             child: Column(
@@ -402,6 +413,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                 TabBar(
                   controller: _tabController,
                   labelColor: Colors.black,
+                  unselectedLabelColor: Colors.black54,
                   indicatorColor: Colors.black,
                   indicatorWeight: 4,
                   labelStyle: const TextStyle(
@@ -414,9 +426,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                     Tab(text: "History"),
                   ],
                 ),
-                // Added thin line below tabs
                 Container(
-                  height: 3.0, // Thinner line
+                  height: 3.0,
                   color: Colors.black,
                 ),
               ],
@@ -439,13 +450,15 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         ],
       ),
       
-      // Floating action button to view local storage data
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFF6FF52), // Yellow to match app bar
-        child: const Icon(Icons.storage, color: Colors.black),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           _showLocalStorageViewer();
         },
+        backgroundColor: const Color(0xFFF6FF52),
+        foregroundColor: Colors.black,
+        elevation: 4,
+        label: const Text('Storage', style: TextStyle(fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.storage),
       ),
     );
   }
@@ -457,36 +470,53 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Wingman profile card
+          // Enhanced Wingman profile card
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFFFFF0), Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.black, width: 2.5),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.black,
+                  color: Colors.black45,
                   offset: Offset(0, 4),
-                  blurRadius: 0,
+                  blurRadius: 4,
                 ),
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Row(
                 children: [
-                  // Profile picture
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      widget.wingmanImage,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                  // Profile picture with enhanced styling
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black38,
+                          offset: Offset(0, 2),
+                          blurRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        widget.wingmanImage,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  // Wingman info
+                  const SizedBox(width: 20),
+                  
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,34 +525,96 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                           widget.wingmanName,
                           style: const TextStyle(
                             fontFamily: 'Futura',
-                            fontSize: 24,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
+                        
+                        // Stats in attractive containers
                         Row(
                           children: [
-                            Icon(Icons.event, color: Colors.grey[700]),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${_upcomingBookings.length} Upcoming Bookings',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 16,
+                            // Upcoming bookings stat - Text now above icon and number
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF6FF52).withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.black, width: 1.5),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Title now at the top
+                                    const Text(
+                                      "Upcoming",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    // Icon and number in a row below
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.event, color: Colors.black),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "${_upcomingBookings.length}",
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(Icons.history, color: Colors.grey[700]),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${_pastBookings.length} Past Bookings',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 16,
+                            
+                            const SizedBox(width: 10),
+                            
+                            // Past bookings stat - Text now above icon and number
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF5CA8).withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.black, width: 1.5),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Title now at the top
+                                    const Text(
+                                      "History",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    // Icon and number in a row below
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.history, color: Colors.black),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "${_pastBookings.length}",
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -537,7 +629,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
           
           const SizedBox(height: 24),
           
-          // Calendar with bookings
+          // Enhanced Calendar container
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -545,77 +637,186 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               border: Border.all(color: Colors.black, width: 2.5),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.black,
+                  color: Colors.black45,
                   offset: Offset(0, 4),
-                  blurRadius: 0,
+                  blurRadius: 4,
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(12),
-            child: TableCalendar(
-              firstDay: DateTime.now().subtract(const Duration(days: 365)),
-              lastDay: DateTime.now().add(const Duration(days: 365)),
-              focusedDay: _focusedDay,
-              calendarFormat: _calendarFormat,
-              eventLoader: _getEventsForDay,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              onFormatChanged: (format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-              calendarStyle: const CalendarStyle(
-                markerDecoration: BoxDecoration(
-                  color: Colors.red, // Changed from yellow to red
-                  shape: BoxShape.circle,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Calendar header - remove date display from black container
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF6FF52),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(17.5),
+                      topRight: Radius.circular(17.5),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_month, size: 24),
+                      const SizedBox(width: 8),
+                      const Text(
+                        "BOOKING CALENDAR",
+                        style: TextStyle(
+                          fontFamily: 'Futura',
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      // Format toggle button - removing the date display
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              // Cycle through calendar formats when clicked
+                              if (_calendarFormat == CalendarFormat.month) {
+                                _calendarFormat = CalendarFormat.twoWeeks;
+                              } else if (_calendarFormat == CalendarFormat.twoWeeks) {
+                                _calendarFormat = CalendarFormat.week;
+                              } else {
+                                _calendarFormat = CalendarFormat.month;
+                              }
+                            });
+                          },
+                          child: const Icon(
+                            Icons.expand_more,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                todayDecoration: BoxDecoration(
-                  color: Color(0x55F6FF52), // Changed from green to yellow with opacity
-                  shape: BoxShape.circle,
+                
+                // Calendar
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: TableCalendar(
+                    firstDay: DateTime.now().subtract(const Duration(days: 365)),
+                    lastDay: DateTime.now().add(const Duration(days: 365)),
+                    focusedDay: _focusedDay,
+                    calendarFormat: _calendarFormat, // This now works with the toggle button above
+                    availableCalendarFormats: const {
+                      CalendarFormat.month: 'Month',
+                      CalendarFormat.twoWeeks: '2 Weeks',
+                      CalendarFormat.week: 'Week',
+                    },
+                    eventLoader: _getEventsForDay,
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    onFormatChanged: (format) {
+                      setState(() {
+                        _calendarFormat = format;
+                      });
+                    },
+                    onPageChanged: (focusedDay) {
+                      _focusedDay = focusedDay;
+                    },
+                    calendarStyle: CalendarStyle(
+                      markerDecoration: BoxDecoration(
+                        color: const Color(0xFFFF5CA8),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1),
+                      ),
+                      markerSize: 8,
+                      markersMaxCount: 3,
+                      todayDecoration: BoxDecoration(
+                        color: const Color(0x55F6FF52),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 1),
+                      ),
+                      selectedDecoration: const BoxDecoration(
+                        color: Color(0xFFF6FF52),
+                        shape: BoxShape.circle,
+                      ),
+                      weekendTextStyle: const TextStyle(color: Color(0xFF616161)),
+                      outsideTextStyle: const TextStyle(color: Color(0xFFAEAEAE)),
+                    ),
+                    headerStyle: const HeaderStyle(
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      titleTextStyle: TextStyle(
+                        fontFamily: 'Futura',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      headerPadding: EdgeInsets.symmetric(vertical: 4),
+                      leftChevronIcon: Icon(Icons.chevron_left, size: 28),
+                      rightChevronIcon: Icon(Icons.chevron_right, size: 28),
+                    ),
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(fontWeight: FontWeight.bold),
+                      weekendStyle: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF616161)),
+                    ),
+                  ),
                 ),
-                selectedDecoration: BoxDecoration(
-                  color: Color(0xFFF6FF52), // Changed from green to yellow
-                  shape: BoxShape.circle,
+                
+                // Booking Legend
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildCalendarLegendItem('Today', const Color(0x55F6FF52)),
+                      const SizedBox(width: 16),
+                      _buildCalendarLegendItem('Selected', const Color(0xFFF6FF52)),
+                      const SizedBox(width: 16),
+                      _buildCalendarLegendItem('Has Bookings', const Color(0xFFFF5CA8)),
+                    ],
+                  ),
                 ),
-              ),
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextStyle: TextStyle(
-                  fontFamily: 'Futura',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              ],
             ),
           ),
           
           const SizedBox(height: 24),
           
-          // Upcoming bookings
-          const Text(
-            "Upcoming Bookings",
-            style: TextStyle(
-              fontFamily: 'Futura',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          // Upcoming bookings section header
+          Row(
+            children: [
+              const Icon(Icons.upcoming, size: 24),
+              const SizedBox(width: 8),
+              const Text(
+                "Upcoming Bookings",
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                "${_upcomingBookings.length} bookings",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
           
           const SizedBox(height: 16),
           
-          // List of upcoming bookings
+          // List of upcoming bookings with enhanced styling
           _upcomingBookings.isEmpty
               ? _buildEmptyState("No upcoming bookings")
               : Column(
@@ -632,6 +833,25 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       ),
     );
   }
+
+  // Legend item for calendar
+  Widget _buildCalendarLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.black, width: 1),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
   
   // Build the History tab with past bookings in table format
   Widget _buildHistoryTab() {
@@ -641,7 +861,6 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     
     for (var booking in _pastBookings) {
       if (booking['cancelled'] != true) {
-        // Fix: Cast totalPrice to int explicitly
         if (booking['totalPrice'] != null) {
           totalEarnings += (booking['totalPrice'] as num).toInt();
         }
@@ -654,251 +873,252 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Booking History",
-            style: TextStyle(
-              fontFamily: 'Futura',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          // Enhanced header with stats summary
+          Row(
+            children: [
+              const Icon(Icons.history, size: 24),
+              const SizedBox(width: 8),
+              const Text(
+                "Booking History",
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          
+          // Stats boxes at the top
+          Row(
+            children: [
+              // Total bookings stat
+              Expanded(
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 3),
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "TOTAL BOOKINGS",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${_pastBookings.length}",
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(width: 12),
+              
+              // Completed bookings stat
+              Expanded(
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 3),
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "COMPLETED",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "$totalCompletedBookings",
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(width: 12),
+              
+              // Total earnings stat
+              Expanded(
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFDAF8DA), Color(0xFFC7F5C7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 3),
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "TOTAL EARNINGS",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "₱${NumberFormat('#,###').format(totalEarnings)}",
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0D8C0D),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
           
           _pastBookings.isEmpty
               ? _buildEmptyState("No booking history")
-              : Column(
-                  children: [
-                    // Table header
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF6FF52),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
+              : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 2.5),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black45,
+                        offset: Offset(0, 4),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // Table header with enhanced styling
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF6FF52),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(13.5),
+                            topRight: Radius.circular(13.5),
+                          ),
                         ),
-                        border: Border.all(color: Colors.black, width: 2),
-                      ),
-                      child: const Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              "USERNAME",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                fontFamily: 'Futura',
+                        child: const Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                "USERNAME",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  fontFamily: 'Futura',
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              "DATE",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                fontFamily: 'Futura',
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                "DATE",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  fontFamily: 'Futura',
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              "EARNINGS",
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                fontFamily: 'Futura',
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "EARNINGS",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  fontFamily: 'Futura',
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    
-                    // Table rows - removed bottom corner radius
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        // Removed borderRadius property to make bottom corners square
-                      ),
-                      child: Column(
+                      
+                      // Improved table rows
+                      Column(
                         children: List.generate(
                           _pastBookings.length,
                           (index) => _buildHistoryTableRow(_pastBookings[index], index),
                         ),
                       ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Summary section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.black, width: 2),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black,
-                            offset: Offset(0, 3),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "SUMMARY",
-                            style: TextStyle(
-                              fontFamily: 'Futura',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Total Bookings:",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                _pastBookings.length.toString(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Total Completed:",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                totalCompletedBookings.toString(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          const Divider(height: 16, thickness: 1),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Total Earnings:",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                "₱${NumberFormat('#,###').format(totalEarnings)}",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF52FF68),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
         ],
       ),
     );
   }
 
-  // Build a row for the history table
-  Widget _buildHistoryTableRow(Map<String, dynamic> booking, int index) {
-    final DateTime bookingDate = DateTime.parse(booking['date']);
-    final String formattedDate = DateFormat('MMM d, yyyy').format(bookingDate);
-    final bool isCancelled = booking['cancelled'] == true;
-    final bool isLastRow = index == _pastBookings.length - 1;
-    
-    return InkWell(
-      onTap: () => _viewReceipt(booking),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: isLastRow ? BorderSide.none : const BorderSide(color: Colors.black26, width: 1),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Text(
-                booking['username'] ?? 'Unknown User',
-                style: TextStyle(
-                  fontFamily: 'Futura',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: isCancelled ? Colors.grey : Colors.black,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                formattedDate,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isCancelled ? Colors.grey : Colors.black,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                isCancelled 
-                    ? "CANCELLED" 
-                    : "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: isCancelled 
-                      ? Colors.red 
-                      : const Color(0xFF52FF68),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  // Build a booking card
+  // Enhanced booking card with modern styling
   Widget _buildBookingCard(Map<String, dynamic> booking, int index, bool isPast) {
     final DateTime bookingDate = DateTime.parse(booking['date']);
     final String formattedDate = DateFormat('EEE, MMM d, yyyy').format(bookingDate);
@@ -908,7 +1128,17 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isCancelled ? Colors.grey[200] : Colors.white,
+        gradient: isCancelled
+            ? LinearGradient(
+                colors: [Colors.grey[100]!, Colors.grey[50]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [Color(0xFFFFFFF0), Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isCancelled ? Colors.grey : Colors.black,
@@ -917,7 +1147,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         boxShadow: [
           if (!isCancelled)
             const BoxShadow(
-              color: Colors.black26,
+              color: Colors.black38,
               offset: Offset(0, 4),
               blurRadius: 4,
             ),
@@ -928,110 +1158,205 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Client info
-            Row(
-              children: [
-                const Icon(Icons.person, size: 22),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    booking['username'] ?? 'Unknown Client',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Date and Time
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  formattedDate,
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(width: 16),
-                const Icon(Icons.access_time, size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  formattedTime,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Location
-            Row(
-              children: [
-                const Icon(Icons.place, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    booking['location'] ?? 'No location specified',
-                    style: const TextStyle(fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Status tag
+            // Status indicator for cancelled bookings
             if (isCancelled)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.red[100],
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.red),
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.red.shade300),
                 ),
-                child: const Text(
-                  'CANCELLED',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.cancel, color: Colors.red, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      'CANCELLED',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              
-            const SizedBox(height: 12),
-            
-            // Action buttons
+
+            // Top section with client info and metadata
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // View Receipt button
-                TextButton.icon(
-                  icon: const Icon(Icons.receipt_long, size: 18),
-                  label: const Text('View Receipt'),
-                  onPressed: () => _viewReceipt(booking),
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF52FF68),
+                // Client section
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Client name
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF6FF52).withOpacity(0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.person, size: 20),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              booking['username'] ?? 'Unknown Client',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isCancelled ? Colors.grey : Colors.black,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Date and time with icons
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today, 
+                            size: 16,
+                            color: isCancelled ? Colors.grey : Colors.black87,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            formattedDate,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isCancelled ? Colors.grey : Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      Row(
+                        children: [
+                          Icon(Icons.access_time, 
+                            size: 16,
+                            color: isCancelled ? Colors.grey : Colors.black87,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            formattedTime,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isCancelled ? Colors.grey : Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 
-                const SizedBox(width: 8),
+                // Price tag
+                if (!isCancelled)
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF52FF68).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFF52FF68)),
+                    ),
+                    child: Text(
+                      "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0D8C0D),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            
+            // Location
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isCancelled ? Colors.grey.shade300 : Colors.grey.shade300,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.place, 
+                    size: 16,
+                    color: isCancelled ? Colors.grey : Colors.redAccent,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      booking['location'] ?? 'No location specified',
+                      style: TextStyle(
+                        color: isCancelled ? Colors.grey : Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+              
+            const SizedBox(height: 16),
+            
+            // Action buttons in a row at the bottom
+            Row(
+              children: [
+                // View Receipt button
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.receipt_long, size: 18),
+                    label: const Text('View Receipt'),
+                    onPressed: () => _viewReceipt(booking),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF52EAFF),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: const BorderSide(color: Colors.black, width: 1),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(width: 12),
                 
                 // Cancel button (only for upcoming bookings)
                 if (!isPast && !isCancelled)
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.cancel, size: 18),
-                    label: const Text('Cancel'),
-                    onPressed: () => _cancelBooking(index, isPast),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.cancel, size: 18),
+                      label: const Text('Cancel'),
+                      onPressed: () => _cancelBooking(index, isPast),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(color: Colors.red, width: 1),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                      ),
                     ),
                   ),
               ],
@@ -1041,8 +1366,113 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       ),
     );
   }
+
+  // Enhanced history table row with better styling
+  Widget _buildHistoryTableRow(Map<String, dynamic> booking, int index) {
+    final DateTime bookingDate = DateTime.parse(booking['date']);
+    final String formattedDate = DateFormat('MMM d, yyyy').format(bookingDate);
+    final bool isCancelled = booking['cancelled'] == true;
+    final bool isLastRow = index == _pastBookings.length - 1;
+    
+    return InkWell(
+      onTap: () => _viewReceipt(booking),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        decoration: BoxDecoration(
+          color: index % 2 == 0 ? Colors.white : const Color(0xFFF9F9F9),
+          border: Border(
+            bottom: isLastRow ? BorderSide.none : BorderSide(
+              color: Colors.grey.shade300,
+              width: 1,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: isCancelled 
+                          ? Colors.grey[300] 
+                          : const Color(0xFFF6FF52).withOpacity(0.4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.person,
+                        size: 18,
+                        color: isCancelled ? Colors.grey[600] : Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      booking['username'] ?? 'Unknown User',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isCancelled ? Colors.grey : Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                formattedDate,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isCancelled ? Colors.grey : Colors.black87,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: isCancelled
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.red[200]!),
+                        ),
+                        child: const Text(
+                          "CANCELLED",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFF0D8C0D),
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   
-  // Build empty state message
+  // Improved empty state with illustration
   Widget _buildEmptyState(String message) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 40),
@@ -1050,12 +1480,20 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.event_busy,
-            size: 80,
-            color: Colors.grey[400],
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6FF52).withOpacity(0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              message.contains("upcoming") ? Icons.event_busy : Icons.history_toggle_off,
+              size: 60,
+              color: Colors.grey[600],
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             message,
             style: TextStyle(
@@ -1064,11 +1502,22 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               fontWeight: FontWeight.w500,
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            message.contains("upcoming") 
+                ? "Bookings will appear here when clients book you"
+                : "Your booking history will appear here",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
   }
-  
+
   // Show local storage viewer dialog
   void _showLocalStorageViewer() async {
     final prefs = await SharedPreferences.getInstance();
