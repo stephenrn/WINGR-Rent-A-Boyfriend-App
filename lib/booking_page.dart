@@ -150,35 +150,83 @@ class _BookingPageState extends State<BookingPage> {
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
-            color: Color(0xFFFF529B), // Pink color for user pages
+            color: Color(0xFFF6FF52), // Yellow color for booking page
             border: Border(
               bottom: BorderSide(
                 color: Colors.black,
-                width: 8.0,
+                width: 8.0, // Thick black border at the bottom
               ),
             ),
           ),
           child: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.transparent, // Transparent so the container decoration shows
             elevation: 0,
-            centerTitle: true,
-            title: Text(
-              "${widget.username}'s Bookings",
-              style: const TextStyle(
-                fontFamily: 'Futura',
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                letterSpacing: 1,
+            automaticallyImplyLeading: false,
+            flexibleSpace: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Left - Logo and title
+                    Row(
+                      children: [
+                        Image.asset(
+                          'images/logo.png',
+                          height: 50,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          "WINGR",
+                          style: TextStyle(
+                            fontFamily: 'Futura',
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    // Right - Status circles
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF5C5C),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2.5),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF7EFF68),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2.5),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF5A6EFF),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            leading: IconButton(
-              icon: Image.asset(
-                'images/closeButton.png',
-                width: 40,
-                height: 40,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
         ),
@@ -196,11 +244,7 @@ class _BookingPageState extends State<BookingPage> {
                   },
                 ),
       
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFFF529B),
-        onPressed: _loadBookings,
-        child: const Icon(Icons.refresh, color: Colors.white),
-      ),
+      // Removed FloatingActionButton (refresh button)
     );
   }
 
@@ -245,165 +289,305 @@ class _BookingPageState extends State<BookingPage> {
     // Check if booking date is in the past
     final bool isPastBooking = DateTime.now().isAfter(bookingDate);
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: isCompleted ? Colors.grey[200] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isCompleted ? Colors.grey : Colors.black,
-          width: 2,
-        ),
-        boxShadow: [
-          if (!isCompleted)
-            const BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 4),
-              blurRadius: 4,
-            ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Wingman card image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(14),
-              topRight: Radius.circular(14),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Wingman card image (now outside container)
+        ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            width: double.infinity,
+            color: Colors.white, // Add white background to prevent transparency issues
             child: Image.asset(
               booking['wingmanCardImage'] ?? 'images/stephen_card.png',
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain, // Changed from cover to contain to show entire image
+              height: null, // Remove fixed height to adapt to image aspect ratio
             ),
           ),
-          
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Wingman name
-                Text(
-                  booking['wingmanName'] ?? 'Unknown Wingman',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        ),
+        
+        const SizedBox(height: 16), // Increased spacing
+        
+        // New separate card for booking details
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 2.5),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black,
+                offset: Offset(0, 4),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Changed from Wingman name to User's Booking
+              Text(
+                "${widget.username}'s Booking",
+                style: const TextStyle(
+                  fontFamily: 'Futura',
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Location field with outline
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Location",
+                    style: TextStyle(
+                      fontFamily: 'Futura',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                
-                const SizedBox(height: 8),
-                
-                // Date and Time
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      formattedDate,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(width: 16),
-                    const Icon(Icons.access_time, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      formattedTime,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 8),
-                
-                // Location
-                Row(
-                  children: [
-                    const Icon(Icons.place, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        booking['location'] ?? 'No location specified',
-                        style: const TextStyle(fontSize: 16),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Status indicator for completed bookings
-                if (isCompleted)
+                  const SizedBox(height: 8),
                   Container(
-                    margin: const EdgeInsets.only(top: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.green[100],
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Colors.green),
+                      color: const Color(0xFFF9F9F9),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black, width: 1),
                     ),
-                    child: const Text(
-                      'COMPLETED',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.place, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            booking['location'] ?? 'No location specified',
+                            style: const TextStyle(
+                              fontFamily: 'Futura',
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Date field - Now in its own row
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Date",
+                    style: TextStyle(
+                      fontFamily: 'Futura',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9F9F9),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black, width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          formattedDate,
+                          style: const TextStyle(
+                            fontFamily: 'Futura',
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Time field - Now in its own row
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Time",
+                    style: TextStyle(
+                      fontFamily: 'Futura',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9F9F9),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black, width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.access_time, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          formattedTime,
+                          style: const TextStyle(
+                            fontFamily: 'Futura',
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Action buttons with new styling
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // View Receipt button in light blue (#59ffff)
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black, width: 2),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(0, 3),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () => _viewReceipt(booking),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF59FFFF), // Light blue
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          "View Receipt",
+                          style: TextStyle(
+                            fontFamily: 'Futura',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                
-                const SizedBox(height: 12),
-                
-                // Action buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // View Receipt button
-                    TextButton.icon(
-                      icon: const Icon(Icons.receipt_long, size: 18),
-                      label: const Text('View Receipt'),
-                      onPressed: () => _viewReceipt(booking),
-                      style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFFFF529B),
+                  
+                  // Show Finished button for past bookings in yellow (#f6ff52)
+                  if (isPastBooking && !isCompleted)
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black, width: 2),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(0, 3),
+                              blurRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () => _completeBooking(index),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF6FF52), // Yellow
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Finished",
+                            style: TextStyle(
+                              fontFamily: 'Futura',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    
-                    const SizedBox(width: 8),
-
-                    // Finished button (for past bookings that are not completed)
-                    if (isPastBooking && !isCompleted)
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.check, size: 18),
-                        label: const Text('Finished'),
-                        onPressed: () => _completeBooking(index),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.green,
-                          side: const BorderSide(color: Colors.green),
+                  
+                  // Show Cancel button for upcoming bookings
+                  if (!isCompleted && !isPastBooking)
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.red, width: 2),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(0, 3),
+                              blurRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () => _cancelBooking(index),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontFamily: 'Futura',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ),
-                    
-                    // Show space only if there are two buttons
-                    if (isPastBooking && !isCompleted)
-                      const SizedBox(width: 8),
-                    
-                    // Cancel button (only for upcoming and not completed bookings)
-                    if (!isCompleted && !isPastBooking)
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.cancel, size: 18),
-                        label: const Text('Cancel'),
-                        onPressed: () => _cancelBooking(index),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
+                    ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        
+        const SizedBox(height: 16), // Space between cards
+      ],
     );
   }
 }
