@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wingr/to_book_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:wingr/booking_page.dart'; // Import for viewing active bookings
 
 // Convert to StatefulWidget to manage page state
 class HomePage extends StatefulWidget {
@@ -59,6 +62,31 @@ class _HomePageState extends State<HomePage> {
         _currentIndex = _profiles.length - 1; // Loop to last profile
       }
     });
+  }
+
+  // Add a method to check for active bookings
+  Future<bool> _hasActiveBookings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? bookingsJson = prefs.getString('bookings');
+    
+    if (bookingsJson != null) {
+      try {
+        final List<dynamic> allBookings = json.decode(bookingsJson);
+        
+        // Find any active bookings for this user (not cancelled, not completed)
+        final activeBookings = allBookings.where((booking) => 
+          booking['username'] == widget.username && 
+          booking['cancelled'] != true &&
+          booking['completed'] != true
+        ).toList();
+        
+        return activeBookings.isNotEmpty;
+      } catch (e) {
+        debugPrint('Error checking active bookings: $e');
+      }
+    }
+    
+    return false; // Default: no active bookings
   }
 
   @override
@@ -289,20 +317,48 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   
-                  // Center - Heart image with booking navigation
+                  // Center - Heart image with booking navigation - Update this section
                   GestureDetector(
-                    onTap: () {
-                      // Navigate to booking page with current profile
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ToBookPage(
-                            wingmanName: _profiles[_currentIndex]['name']!,
-                            wingmanCardImage: _profiles[_currentIndex]['card']!,
-                            username: widget.username, // Pass the username from HomePage
+                    onTap: () async {
+                      // Check for active bookings first
+                      bool hasActive = await _hasActiveBookings();
+                      
+                      if (hasActive) {
+                        // Show a message that user already has an active booking
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(Icons.info_outline, color: Colors.white),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'You already have an active booking. Please complete or cancel it before booking again.',
+                                      style: TextStyle(fontFamily: 'Futura'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 4),
+                              // Removed the SnackBarAction with VIEW button here
+                            ),
+                          );
+                        }
+                      } else {
+                        // No active bookings, proceed with navigation to booking page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ToBookPage(
+                              wingmanName: _profiles[_currentIndex]['name']!,
+                              wingmanCardImage: _profiles[_currentIndex]['card']!,
+                              username: widget.username,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     child: Image.asset(
                       'images/pixel_heart.png',

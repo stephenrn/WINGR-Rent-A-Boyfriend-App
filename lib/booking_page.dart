@@ -538,8 +538,8 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ),
                   
-                  // Show Finished button for past bookings in yellow (#f6ff52)
-                  if (isPastBooking && !isCompleted)
+                  // Always show Finished button for active bookings (not completed)
+                  if (!isCompleted)
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(left: 8),
@@ -571,45 +571,6 @@ class _BookingPageState extends State<BookingPage> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  
-                  // Show Cancel button for upcoming bookings
-                  if (!isCompleted && !isPastBooking)
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.red, width: 2),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(0, 3),
-                              blurRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => _cancelBooking(index),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              fontFamily: 'Futura',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
                             ),
                           ),
                         ),
