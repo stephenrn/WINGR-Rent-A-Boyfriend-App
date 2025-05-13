@@ -327,17 +327,52 @@ class _BookingPageState extends State<BookingPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Changed from Wingman name to User's Booking
-              Text(
-                "${widget.username}'s Booking",
-                style: const TextStyle(
-                  fontFamily: 'Futura',
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+              // Changed from Wingman name to User's Booking with Cancel button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left side - User's booking text
+                  Text(
+                    "${widget.username}'s Booking",
+                    style: const TextStyle(
+                      fontFamily: 'Futura',
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  
+                  // Right side - Cancel button
+                  GestureDetector(
+                    onTap: () {
+                      // Show confirmation dialog
+                      _showCancelConfirmationDialog(index);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red, width: 1.5),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.cancel, color: Colors.red, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(height: 20),
               
               // Location field with outline
               Column(
@@ -588,6 +623,69 @@ class _BookingPageState extends State<BookingPage> {
         
         const SizedBox(height: 16), // Space between cards
       ],
+    );
+  }
+
+  // Add confirmation dialog method
+  void _showCancelConfirmationDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Cancel Booking?",
+            style: TextStyle(fontFamily: 'Futura'),
+          ),
+          content: const Text(
+            "Are you sure you want to cancel this booking? This action cannot be undone.",
+            style: TextStyle(fontFamily: 'Futura'),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.black, width: 2),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                "No, Keep It",
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _cancelBooking(index);
+                  
+                  // Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Booking has been cancelled'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Yes, Cancel",
+                  style: TextStyle(
+                    fontFamily: 'Futura',
+                    color: Colors.white, 
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
