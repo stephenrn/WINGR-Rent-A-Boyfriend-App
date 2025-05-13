@@ -80,6 +80,7 @@ flutter:
     - images/stephen_picture.jpg  # Changed from .png to .jpg
     - images/jeff_picture.jpg     # Changed from .png to .jpg
     - images/dave_picture.jpg     # Changed from .png to .jpg
+    - images/barcode.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
