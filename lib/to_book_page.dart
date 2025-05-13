@@ -23,12 +23,12 @@ class _ToBookPageState extends State<ToBookPage> {
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
   
-  // Selected values
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  String _selectedDuration = "2 Hours\n₱400";
+  // Selected values - Remove defaults
+  DateTime? _selectedDate; // Changed to nullable
+  TimeOfDay? _selectedTime; // Changed to nullable
+  String? _selectedDuration; // Changed to nullable
   
-  // Replace selected purpose with a map to track multiple selections
+  // Replace selected purpose with a map where all values are false (no defaults)
   Map<String, bool> _selectedPurposes = {
     "Movie Date\n₱500": false,
     "Family/Event Companion\n₱1,000": false,
@@ -39,7 +39,7 @@ class _ToBookPageState extends State<ToBookPage> {
     "Travel Companion (Day Tour)\n₱2,000": false,
     "Gym Partner\n₱350": false,
     "Photoshoot Partner\n₱500": false,
-    "Café or Chill Talk\n₱300": true, // Default selected
+    "Café or Chill Talk\n₱300": false,
     "Nightlife Companion\n₱1,000": false,
     "Pet Date\n₱400": false
   };
@@ -56,10 +56,11 @@ class _ToBookPageState extends State<ToBookPage> {
 
   // Remove purpose options as we now use the map keys
 
+  // Update date picker to handle nullable date
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _selectedDate ?? DateTime.now(), // Use current date if none selected
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 90)),
       builder: (context, child) {
@@ -76,17 +77,18 @@ class _ToBookPageState extends State<ToBookPage> {
       },
     );
     
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
         _selectedDate = picked;
       });
     }
   }
 
+  // Update time picker to handle nullable time
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: _selectedTime ?? TimeOfDay.now(), // Use current time if none selected
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -101,7 +103,7 @@ class _ToBookPageState extends State<ToBookPage> {
       },
     );
     
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null) {
       setState(() {
         _selectedTime = picked;
       });
@@ -257,29 +259,34 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Date field - remove box shadow
+                      // Date field - Updated to handle nullable value
                       _buildDateField(
                         title: "Date",
-                        value: DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
+                        value: _selectedDate != null
+                            ? DateFormat('EEEE, MMM d, yyyy').format(_selectedDate!)
+                            : "Select date",
                         onTap: _selectDate,
                       ),
                       
                       const SizedBox(height: 20),
                       
-                      // Time in its own row
+                      // Time field - Updated to handle nullable value
                       _buildDateField(
                         title: "Time",
-                        value: _selectedTime.format(context),
+                        value: _selectedTime != null
+                            ? _selectedTime!.format(context)
+                            : "Select time",
                         onTap: _selectTime,
                       ),
                       
                       const SizedBox(height: 20),
                       
-                      // Duration dropdown with pricing
+                      // Duration dropdown - Updated to handle nullable value
                       _buildDropdownField(
                         title: "Duration & Price",
                         value: _selectedDuration,
                         items: _durationOptions,
+                        hint: "Select duration",
                         onChanged: (value) {
                           if (value != null) {
                             setState(() {
@@ -352,6 +359,37 @@ class _ToBookPageState extends State<ToBookPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        // Check if date, time, and duration are selected
+                        if (_selectedDate == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a date'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        
+                        if (_selectedTime == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a time'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        
+                        if (_selectedDuration == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select duration'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        
                         // Get the list of selected purposes
                         final selectedPurposesList = _selectedPurposes.entries
                             .where((entry) => entry.value)
@@ -512,9 +550,10 @@ class _ToBookPageState extends State<ToBookPage> {
   // Update dropdown field to display prices clearly
   Widget _buildDropdownField({
     required String title,
-    required String value,
+    required String? value,
     required List<String> items,
     required Function(String?) onChanged,
+    required String hint,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,6 +578,10 @@ class _ToBookPageState extends State<ToBookPage> {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: value,
+              hint: Text(
+                hint,
+                style: TextStyle(color: Colors.grey[400]),
+              ),
               icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF52FF68)),
               isExpanded: true,
               // Explicitly set a higher item height
