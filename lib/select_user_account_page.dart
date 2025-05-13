@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'home_navigation.dart';
+import 'package:wingr/to_book_page.dart'; // Import ToBookPage here
 
 class SelectUserAccountPage extends StatefulWidget {
   const SelectUserAccountPage({super.key});
@@ -163,7 +164,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                               ],
                             ),
                             child: ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () => Navigator.of(context).pop(),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: Colors.black,
@@ -201,7 +202,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 _deleteUser(index);
-                                Navigator.pop(context);
+                                Navigator.of(context).pop();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFFF5C5C), // Red delete button
@@ -360,7 +361,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.pop(context);
+                                Navigator.of(context).pop();
                                 _nameController.clear();
                               },
                               style: ElevatedButton.styleFrom(
@@ -402,7 +403,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                                 if (_nameController.text.trim().isNotEmpty) {
                                   // Update to use new method that handles storage
                                   _addUser(_nameController.text);
-                                  Navigator.pop(context);
+                                  Navigator.of(context).pop();
                                   _nameController.clear();
                                 }
                               },
@@ -524,7 +525,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.of(context).pop(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFF5CA8),
                           shape: RoundedRectangleBorder(
@@ -547,6 +548,19 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToBookPage(BuildContext context, String wingmanName, String wingmanImage, String username) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ToBookPage(
+          wingmanName: wingmanName,
+          wingmanCardImage: wingmanImage,
+          username: username,
         ),
       ),
     );

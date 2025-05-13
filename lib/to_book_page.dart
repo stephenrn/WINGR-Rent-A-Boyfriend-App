@@ -5,11 +5,13 @@ import 'package:wingr/payment_page.dart';
 class ToBookPage extends StatefulWidget {
   final String wingmanName;
   final String wingmanCardImage;
+  final String username; // Add username parameter
 
   const ToBookPage({
     super.key, 
     required this.wingmanName, 
     required this.wingmanCardImage,
+    this.username = 'Guest User', // Default value
   });
 
   @override
@@ -30,7 +32,7 @@ class _ToBookPageState extends State<ToBookPage> {
   String? _selectedDuration; // Changed to nullable
   
   // Replace selected purpose with a map where all values are false (no defaults)
-  Map<String, bool> _selectedPurposes = {
+  final Map<String, bool> _selectedPurposes = {
     "Movie Date\n₱500": false,
     "Family/Event Companion\n₱1,000": false,
     "Shopping Buddy\n₱400": false,
@@ -124,7 +126,7 @@ class _ToBookPageState extends State<ToBookPage> {
       backgroundColor: const Color(0xFFF9F5F2),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
-        child: Container(
+        child: Container( // Fixed: replaced comma with parenthesis
           decoration: const BoxDecoration(
             color: Color(0xFF52FF68),
             border: Border(
@@ -423,16 +425,17 @@ class _ToBookPageState extends State<ToBookPage> {
                             totalPrice += purposePrice;
                           }
                           
-                          // For payment page display purposes, get purpose names without prices
-                          final purposeNames = selectedPurposesList
-                              .map((purpose) => purpose.split('\n')[0])
-                              .toList();
+                          // Remove unused variable
+                          // final purposeNames = selectedPurposesList
+                          //    .map((purpose) => purpose.split('\n')[0])
+                          //    .toList();
                           
                           // Navigate to payment page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => PaymentPage(
+                                username: widget.username,
                                 wingmanName: widget.wingmanName,
                                 wingmanCardImage: widget.wingmanCardImage,
                                 location: _locationController.text,

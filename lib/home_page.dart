@@ -299,6 +299,7 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => ToBookPage(
                             wingmanName: _profiles[_currentIndex]['name']!,
                             wingmanCardImage: _profiles[_currentIndex]['card']!,
+                            username: widget.username, // Pass the username from HomePage
                           ),
                         ),
                       );

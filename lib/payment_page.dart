@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wingr/home_navigation.dart';
+import 'dart:convert';
+
+import 'package:wingr/receipt_page.dart';
+import 'package:wingr/booking_page.dart'; // Import BookingPage
 
 class PaymentPage extends StatefulWidget {
   final String wingmanName;
@@ -11,6 +17,7 @@ class PaymentPage extends StatefulWidget {
   final List<String> purposes;
   final String notes;
   final int totalPrice;
+  final String username; // Add username parameter
 
   const PaymentPage({
     super.key,
@@ -23,6 +30,7 @@ class PaymentPage extends StatefulWidget {
     required this.purposes,
     required this.notes,
     required this.totalPrice,
+    this.username = 'Guest User', // Default to Guest User
   });
 
   @override
@@ -41,6 +49,90 @@ class _PaymentPageState extends State<PaymentPage> {
   
   // Selected payment method
   String? _selectedPaymentMethod;
+
+  // Process payment
+  void _processPayment() async {
+    if (_selectedPaymentMethod == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a payment method'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    // Show processing message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Processing payment of ₱${NumberFormat('#,###').format(widget.totalPrice)}...'),
+        backgroundColor: const Color(0xFF52EAFF),
+      ),
+    );
+    
+    // Create booking object
+    final booking = {
+      'id': 'B${DateTime.now().millisecondsSinceEpoch}',
+      'wingmanName': widget.wingmanName,
+      'wingmanCardImage': widget.wingmanCardImage,
+      'username': widget.username, // Use the username from widget
+      'location': widget.location,
+      'date': widget.date.toIso8601String(),
+      'time': widget.time.format(context),
+      'duration': widget.duration,
+      'purposes': widget.purposes,
+      'notes': widget.notes,
+      'totalPrice': widget.totalPrice,
+      'paymentMethod': _selectedPaymentMethod,
+      'paymentDate': DateTime.now().toIso8601String(),
+      'completed': false,
+      'cancelled': false,
+    };
+    
+    // Save booking data
+    await _saveBookingData(booking);
+    
+    // Navigate to receipt page
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReceiptPage(
+            booking: booking,
+            onClose: () {
+              // Navigate to HomeNavigation when receipt is closed instead of BookingPage
+              Navigator.pushAndRemoveUntil(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => HomeNavigation(
+                    username: widget.username,
+                  ),
+                ),
+                (route) => false, // This clears the navigation stack
+              );
+            },
+          ),
+        ),
+      );
+    }
+  }
+  
+  // Save booking data to shared preferences
+  Future<void> _saveBookingData(Map<String, dynamic> booking) async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Save to a single bookings storage key that both users and wingmen can access
+    final String bookingsKey = 'bookings';
+    List<dynamic> bookings = [];
+    
+    final String? existingBookings = prefs.getString(bookingsKey);
+    if (existingBookings != null) {
+      bookings = json.decode(existingBookings);
+    }
+    
+    bookings.add(booking);
+    await prefs.setString(bookingsKey, json.encode(bookings));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +301,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                     
@@ -317,7 +409,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
@@ -339,30 +431,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   borderRadius: BorderRadius.circular(32),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_selectedPaymentMethod == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select a payment method'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    } else {
-                      // Handle payment processing
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Processing payment of ₱${NumberFormat('#,###').format(widget.totalPrice)}...'),
-                          backgroundColor: const Color(0xFF52EAFF),
-                        ),
-                      );
-                      
-                      // In a real app, we would integrate payment gateway here
-                      // For now, just show a success dialog
-                      Future.delayed(const Duration(seconds: 2), () {
-                        _showPaymentSuccessDialog(context);
-                      });
-                    }
-                  },
+                  onPressed: _processPayment, // Connect to our new function
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF52EAFF),
                     foregroundColor: Colors.white,
@@ -430,65 +499,6 @@ class _PaymentPageState extends State<PaymentPage> {
           ],
         ),
       ],
-    );
-  }
-  
-  // Show payment success dialog
-  void _showPaymentSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: const BorderSide(color: Colors.black, width: 2),
-          ),
-          title: const Text(
-            "Booking Successful",
-            style: TextStyle(fontFamily: 'Futura'),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.check_circle,
-                color: Color(0xFF52EAFF),
-                size: 80,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "You've successfully booked ${widget.wingmanName} for ${widget.date.day}/${widget.date.month}/${widget.date.year}!",
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Check your booking details in the Bookings tab.",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Return to home (close multiple screens)
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor: const Color(0xFF52EAFF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  side: const BorderSide(color: Colors.black, width: 1.5),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: const Text("DONE"),
-            ),
-          ],
-        );
-      },
     );
   }
 }

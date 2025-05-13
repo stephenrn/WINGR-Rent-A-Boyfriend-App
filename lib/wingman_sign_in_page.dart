@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wingr/wingman_dashboard_page.dart';
 
 class WingmanSignInPage extends StatefulWidget {
   const WingmanSignInPage({super.key});
@@ -164,40 +165,63 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
                     // Determine if this is the active card
                     final isActive = index == _currentIndex;
                     
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 12.0, 
-                        vertical: isActive ? 0 : 30.0, // Active card is bigger
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: isActive ? 20 : 10,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: AspectRatio(
-                          aspectRatio: 3/4, // Portrait orientation
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 4, // Thicker border
+                    return GestureDetector(
+                      onTap: () {
+                        // Only navigate when tapping the active card
+                        if (isActive) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WingmanDashboardPage(
+                                wingmanName: _wingmen[index]['name']!,
+                                wingmanImage: _wingmen[index]['image']!,
                               ),
-                              borderRadius: BorderRadius.circular(24),
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(
-                                _wingmen[index]['image']!,
-                                fit: BoxFit.cover,
+                          );
+                        } else {
+                          // If not active, make it active
+                          _pageController.animateToPage(
+                            index,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 12.0, 
+                          vertical: isActive ? 0 : 30.0, // Active card is bigger
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromRGBO(0, 0, 0, 0.3),
+                              blurRadius: isActive ? 20 : 10,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: AspectRatio(
+                            aspectRatio: 3/4, // Portrait orientation
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 4, // Thicker border
+                                ),
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset(
+                                  _wingmen[index]['image']!,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
@@ -246,7 +270,7 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
                       borderRadius: BorderRadius.circular(7.0),
                       color: index == _currentIndex 
                           ? const Color(0xFFFF5CA8) // Pink for active
-                          : Colors.black.withOpacity(0.3), // Gray for inactive
+                          : const Color.fromRGBO(0, 0, 0, 0.3), // Gray for inactive
                       border: Border.all(color: Colors.black, width: 2),
                     ),
                   ),
