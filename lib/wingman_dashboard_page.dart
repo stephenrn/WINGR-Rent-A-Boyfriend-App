@@ -633,8 +633,22 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Build the History tab with past bookings
+  // Build the History tab with past bookings in table format
   Widget _buildHistoryTab() {
+    // Calculate total earnings (excluding cancelled bookings)
+    int totalEarnings = 0;
+    int totalCompletedBookings = 0;
+    
+    for (var booking in _pastBookings) {
+      if (booking['cancelled'] != true) {
+        // Fix: Cast totalPrice to int explicitly
+        if (booking['totalPrice'] != null) {
+          totalEarnings += (booking['totalPrice'] as num).toInt();
+        }
+        totalCompletedBookings++;
+      }
+    }
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -651,20 +665,235 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
           
           const SizedBox(height: 16),
           
-          // List of past bookings
           _pastBookings.isEmpty
               ? _buildEmptyState("No booking history")
               : Column(
-                  children: List.generate(
-                    _pastBookings.length,
-                    (index) => _buildBookingCard(
-                      _pastBookings[index],
-                      index,
-                      true,
+                  children: [
+                    // Table header
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF6FF52),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: const Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "USERNAME",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                fontFamily: 'Futura',
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "DATE",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                fontFamily: 'Futura',
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              "EARNINGS",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                fontFamily: 'Futura',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    
+                    // Table rows - removed bottom corner radius
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 2),
+                        // Removed borderRadius property to make bottom corners square
+                      ),
+                      child: Column(
+                        children: List.generate(
+                          _pastBookings.length,
+                          (index) => _buildHistoryTableRow(_pastBookings[index], index),
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Summary section
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black, width: 2),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(0, 3),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "SUMMARY",
+                            style: TextStyle(
+                              fontFamily: 'Futura',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Total Bookings:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                _pastBookings.length.toString(),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Total Completed:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                totalCompletedBookings.toString(),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Divider(height: 16, thickness: 1),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Total Earnings:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Text(
+                                "₱${NumberFormat('#,###').format(totalEarnings)}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF52FF68),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
         ],
+      ),
+    );
+  }
+
+  // Build a row for the history table
+  Widget _buildHistoryTableRow(Map<String, dynamic> booking, int index) {
+    final DateTime bookingDate = DateTime.parse(booking['date']);
+    final String formattedDate = DateFormat('MMM d, yyyy').format(bookingDate);
+    final bool isCancelled = booking['cancelled'] == true;
+    final bool isLastRow = index == _pastBookings.length - 1;
+    
+    return InkWell(
+      onTap: () => _viewReceipt(booking),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            bottom: isLastRow ? BorderSide.none : const BorderSide(color: Colors.black26, width: 1),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                booking['username'] ?? 'Unknown User',
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: isCancelled ? Colors.grey : Colors.black,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                formattedDate,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isCancelled ? Colors.grey : Colors.black,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                isCancelled 
+                    ? "CANCELLED" 
+                    : "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: isCancelled 
+                      ? Colors.red 
+                      : const Color(0xFF52FF68),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
