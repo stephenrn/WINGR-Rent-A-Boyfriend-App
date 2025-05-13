@@ -347,69 +347,101 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
-            color: Color(0xFF52FF68), // Green background for wingman pages
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-                width: 8.0,
-              ),
-            ),
+            color: Color(0xFFF6FF52), // Yellow background
+            // Removed border from here
           ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            title: Text(
-              "${widget.wingmanName}'s Dashboard",
-              style: const TextStyle(
-                fontFamily: 'Futura',
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                letterSpacing: 1,
+          child: SafeArea(
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              title: Text(
+                "${widget.wingmanName}'s Dashboard",
+                style: const TextStyle(
+                  fontFamily: 'Futura',
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  letterSpacing: 1,
+                ),
               ),
-            ),
-            leading: IconButton(
-              icon: Image.asset(
-                'images/closeButton.png',
-                width: 40,
-                height: 40,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            bottom: TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              indicatorColor: Colors.black,
-              indicatorWeight: 4,
-              labelStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Futura',
-              ),
-              tabs: const [
-                Tab(text: "To Go"),
-                Tab(text: "History"),
+              // Remove the leading property and move close button to actions
+              automaticallyImplyLeading: false,
+              actions: [
+                // Close button now on the right side and bigger
+                Container(
+                  margin: const EdgeInsets.only(right: 16.0),
+                  width: 60, // Make bigger
+                  height: 60, // Make bigger
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Image.asset(
+                        'images/closeButton.png',
+                        width: 60,
+                        height: 60,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
       
-      body: TabBarView(
-        controller: _tabController,
+      // Body now contains both TabBar and TabBarView
+      body: Column(
         children: [
-          // To Go Tab
-          _buildToGoTab(),
+          // TabBar moved from AppBar to body
+          Container(
+            color: const Color(0xFFF6FF52), // Yellow background to match AppBar
+            child: Column(
+              children: [
+                TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.black,
+                  indicatorColor: Colors.black,
+                  indicatorWeight: 4,
+                  labelStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Futura',
+                  ),
+                  tabs: const [
+                    Tab(text: "To Go"),
+                    Tab(text: "History"),
+                  ],
+                ),
+                // Added thin line below tabs
+                Container(
+                  height: 3.0, // Thinner line
+                  color: Colors.black,
+                ),
+              ],
+            ),
+          ),
           
-          // History Tab
-          _buildHistoryTab(),
+          // TabBarView takes remaining space
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // To Go Tab
+                _buildToGoTab(),
+                
+                // History Tab
+                _buildHistoryTab(),
+              ],
+            ),
+          ),
         ],
       ),
       
       // Floating action button to view local storage data
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF52FF68),
+        backgroundColor: const Color(0xFFF6FF52), // Yellow to match app bar
         child: const Icon(Icons.storage, color: Colors.black),
         onPressed: () {
           _showLocalStorageViewer();
@@ -545,15 +577,15 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               },
               calendarStyle: const CalendarStyle(
                 markerDecoration: BoxDecoration(
-                  color: Color(0xFF52FF68),
+                  color: Colors.red, // Changed from yellow to red
                   shape: BoxShape.circle,
                 ),
                 todayDecoration: BoxDecoration(
-                  color: Color(0x5552FF68),
+                  color: Color(0x55F6FF52), // Changed from green to yellow with opacity
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
-                  color: Color(0xFF52FF68),
+                  color: Color(0xFFF6FF52), // Changed from green to yellow
                   shape: BoxShape.circle,
                 ),
               ),

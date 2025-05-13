@@ -47,20 +47,33 @@ class ReceiptPage extends StatelessWidget {
                 letterSpacing: 1,
               ),
             ),
-            leading: IconButton(
-              icon: Image.asset(
-                'images/closeButton.png',
-                width: 40,
-                height: 40,
+            // Remove leading property and add the close button to actions
+            automaticallyImplyLeading: false,
+            actions: [
+              // Close button now on the right side and bigger
+              Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                width: 60, // Make bigger
+                height: 60, // Make bigger
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (onClose != null) {
+                        onClose!();
+                      } else {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: Image.asset(
+                      'images/closeButton.png',
+                      width: 60,
+                      height: 60,
+                    ),
+                  ),
+                ),
               ),
-              onPressed: () {
-                if (onClose != null) {
-                  onClose!();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
+            ],
           ),
         ),
       ),
