@@ -30,15 +30,14 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  // Payment method options
-  final List<String> _paymentMethods = [
-    'Credit/Debit Card',
-    'PayPal',
-    'Google Pay',
-    'Apple Pay',
-    'Bank Transfer',
-    'Cash on Arrival',
-  ];
+  // Payment method options with corresponding images
+  final Map<String, String> _paymentMethods = {
+    'Credit/Debit Card': 'images/creditDebit.png',
+    'PayPal': 'images/paypal.png',
+    'Google Pay': 'images/googlePay.png',
+    'Apple Pay': 'images/applePay.png',
+    'Bank Transfer': 'images/bankTransfer.png',
+  };
   
   // Selected payment method
   String? _selectedPaymentMethod;
@@ -258,25 +257,55 @@ class _PaymentPageState extends State<PaymentPage> {
                     
                     const SizedBox(height: 12),
                     
-                    // Payment options as radio buttons
-                    ...List.generate(_paymentMethods.length, (index) {
+                    // Payment options with images - redesigned
+                    ..._paymentMethods.entries.map((entry) {
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
+                        margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
-                          color: _selectedPaymentMethod == _paymentMethods[index]
+                          color: _selectedPaymentMethod == entry.key
                               ? const Color(0xFFE6FCFF)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: _selectedPaymentMethod == _paymentMethods[index]
+                            color: _selectedPaymentMethod == entry.key
                                 ? const Color(0xFF52EAFF)
                                 : Colors.black26,
                             width: 2,
                           ),
                         ),
                         child: RadioListTile<String>(
-                          title: Text(_paymentMethods[index]),
-                          value: _paymentMethods[index],
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Payment method name on left
+                              Text(
+                                entry.key,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              
+                              // Payment method icon on right - bigger with no border
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Image.asset(
+                                  entry.value, // Image path
+                                  width: 60, // Increased size
+                                  height: 45, // Increased size
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.payment, 
+                                      color: Color(0xFF52EAFF),
+                                      size: 40,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          value: entry.key,
                           groupValue: _selectedPaymentMethod,
                           activeColor: const Color(0xFF52EAFF),
                           onChanged: (value) {
@@ -284,9 +313,11 @@ class _PaymentPageState extends State<PaymentPage> {
                               _selectedPaymentMethod = value;
                             });
                           },
+                          // Align radio button to the left edge
+                          controlAffinity: ListTileControlAffinity.leading,
                         ),
                       );
-                    }),
+                    }).toList(),
                   ],
                 ),
               ),
