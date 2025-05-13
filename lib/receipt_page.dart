@@ -91,10 +91,7 @@ class ReceiptPage extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(5),
-                    bottomRight: Radius.circular(5),
-                  ),
+                  borderRadius: BorderRadius.circular(10), // Simple rounded corners
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.3),
@@ -103,342 +100,329 @@ class ReceiptPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
-                    // Top zigzag edge for receipt
-                    ClipPath(
-                      clipper: ReceiptTopClipper(),
-                      child: Container(
-                        height: 20, // Increased from 15 to make zigzag more visible
-                        color: Colors.white,
-                        width: double.infinity,
+                // Removed ClipPath and ReceiptClipper
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 35), // Reduced side padding from 24 to 16
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Added logo - BIGGER (kept only one logo instance)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: Image.asset(
+                          'images/logo.png',
+                          height: 80, 
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                    
-                    // Receipt content
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 35), // Increased padding
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      
+                      // Receipt header with Futura font
+                      const Center(
+                        child: Text(
+                          "WINGR",
+                          style: TextStyle(
+                            fontFamily: 'Futura', // Changed to Futura font
+                            fontWeight: FontWeight.bold,
+                            fontSize: 40, 
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 6),
+                      
+                      // Remove duplicate padding section and keep content directly
+                      const Text(
+                        "BOOKING RECEIPT",
+                        style: TextStyle(
+                          // Removed fontFamily: 'Courier'
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Receipt ID and date
+                      Text(
+                        "Receipt #: ${booking['id']?.substring(1, 9) ?? 'N/A'}",
+                        style: const TextStyle(
+                          // Removed fontFamily: 'Courier'
+                          fontSize: 14,
+                        ),
+                      ),
+                      
+                      Text(
+                        "Date: ${DateFormat('MM/dd/yyyy').format(DateTime.now())}",
+                        style: const TextStyle(
+                          // Removed fontFamily: 'Courier'
+                          fontSize: 14,
+                        ),
+                      ),
+                      
+                      Text(
+                        "Time: ${DateFormat('HH:mm:ss').format(DateTime.now())}",
+                        style: const TextStyle(
+                          // Removed fontFamily: 'Courier'
+                          fontSize: 14,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      _buildDashedLine(),
+                      const SizedBox(height: 12),
+                      
+                      // Customer info - BIGGER
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Added logo - BIGGER
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
-                            child: Image.asset(
-                              'images/logo.png',
-                              height: 80, // Increased from 60 to 80
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          
-                          // Receipt header with normal font
-                          const Center(
-                            child: Text(
-                              "WINGR",
-                              style: TextStyle(
-                                // Removed fontFamily: 'Courier'
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40, 
-                                letterSpacing: 3,
-                              ),
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 6),
-                          
                           const Text(
-                            "BOOKING RECEIPT",
+                            "CUSTOMER:",
                             style: TextStyle(
-                              // Removed fontFamily: 'Courier'
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 12),
-                          
-                          // Receipt ID and date
-                          Text(
-                            "Receipt #: ${booking['id']?.substring(1, 9) ?? 'N/A'}",
-                            style: const TextStyle(
-                              // Removed fontFamily: 'Courier'
-                              fontSize: 14,
-                            ),
-                          ),
-                          
-                          Text(
-                            "Date: ${DateFormat('MM/dd/yyyy').format(DateTime.now())}",
-                            style: const TextStyle(
-                              // Removed fontFamily: 'Courier'
-                              fontSize: 14,
-                            ),
-                          ),
-                          
-                          Text(
-                            "Time: ${DateFormat('HH:mm:ss').format(DateTime.now())}",
-                            style: const TextStyle(
-                              // Removed fontFamily: 'Courier'
-                              fontSize: 14,
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 12),
-                          _buildDashedLine(),
-                          const SizedBox(height: 12),
-                          
-                          // Customer info - BIGGER
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "CUSTOMER:",
-                                style: TextStyle(
-                                  fontSize: 16, // Increased from 12
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                booking['username'] ?? 'Guest User',
-                                style: const TextStyle(
-                                  fontSize: 16, // Increased from 12
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 6), // Added spacing between rows
-                          
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "WINGMAN:",
-                                style: TextStyle(
-                                  fontSize: 16, // Increased from 12
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                booking['wingmanName'] ?? 'N/A',
-                                style: const TextStyle(
-                                  fontSize: 16, // Increased from 12
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 12), // Increased spacing after these sections
-                          
-                          // Booking details - simplified format
-                          _buildReceiptRow("DATE", formattedDate),
-                          _buildReceiptRow("TIME", booking['time'] ?? 'N/A'),
-                          _buildReceiptRow("LOCATION", booking['location'] ?? 'N/A'),
-                          _buildReceiptRow(
-                            "DURATION", 
-                            (booking['duration'] ?? 'N/A').split('\n')[0]
-                          ),
-                          
-                          const SizedBox(height: 10),
-                          _buildDashedLine(),
-                          const SizedBox(height: 10),
-                          
-                          // Add Special Notes section
-                          if (booking['notes'] != null && booking['notes'].toString().isNotEmpty)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 10),
-                                
-                                const Text(
-                                  "SPECIAL NOTES:",
-                                  style: TextStyle(
-                                    // Removed fontFamily: 'Courier'
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                
-                                const SizedBox(height: 8),
-                                
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.grey[300]!),
-                                  ),
-                                  child: Text(
-                                    booking['notes'].toString(),
-                                    style: const TextStyle(
-                                      // Removed fontFamily: 'Courier'
-                                      fontSize: 14,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          
-                          const SizedBox(height: 12),
-                          _buildDashedLine(),
-                          const SizedBox(height: 12),
-                          
-                          // Items section
-                          const Text(
-                            "ITEMS",
-                            style: TextStyle(
-                              // Removed fontFamily: 'Courier'
-                              fontSize: 16, // Increased from 14
+                              fontSize: 16, // Increased from 12
                               fontWeight: FontWeight.bold,
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          
-                          const SizedBox(height: 12),
-                          
-                          // First item: Duration
-                          _buildItemRow(
-                            (booking['duration'] ?? 'N/A').split('\n')[0],
-                            _extractPrice(booking['duration'] ?? '₱0')
-                          ),
-                          
-                          // Purpose items
-                          ...List.generate(
-                            purposes.length,
-                            (index) {
-                              final purpose = purposes[index];
-                              final parts = purpose.split('\n');
-                              final name = parts[0];
-                              final price = parts.length > 1 ? parts[1] : '₱0';
-                              return _buildItemRow(name, price);
-                            },
-                          ),
-                          
-                          const SizedBox(height: 12),
-                          _buildDashedLine(),
-                          const SizedBox(height: 12),
-                          
-                          // Total section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "TOTAL",
-                                style: TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 18, // Increased from 16
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
-                                style: const TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 18, // Increased from 16
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 10),
-                          
-                          // Payment method
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "PAYMENT METHOD:",
-                                style: TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 12,
-                                ),
-                              ),
-                              Text(
-                                booking['paymentMethod'] ?? 'N/A',
-                                style: const TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 15),
-                          _buildDashedLine(),
-                          const SizedBox(height: 15),
-                          
-                          // Status info with normal font
-                          if (booking['cancelled'] == true)
-                            const Center(
-                              child: Text(
-                                "*** CANCELLED ***",
-                                style: TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 20, // Increased from 16 to 20
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                              ),
+                          Text(
+                            booking['username'] ?? 'Guest User',
+                            style: const TextStyle(
+                              fontSize: 16, // Increased from 12
                             ),
-                            
-                          if (booking['completed'] == true && booking['cancelled'] != true)
-                            const Center(
-                              child: Text(
-                                "*** COMPLETED ***",
-                                style: TextStyle(
-                                  // Removed fontFamily: 'Courier'
-                                  fontSize: 20, // Increased from 16 to 20
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ),
-                          
-                          const SizedBox(height: 20), // Increased from 15
-                          
-                          // Thank you notes with normal font
-                          const Center(
-                            child: Text(
-                              "Thank you for using Wingr!",
-                              style: TextStyle(
-                                // Removed fontFamily: 'Courier'
-                                fontSize: 14, // Increased from 12
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 6),
-                          const Center(
-                            child: Text(
-                              "See you next time!",
-                              style: TextStyle(
-                                // Removed fontFamily: 'Courier'
-                                fontSize: 14, // Increased from 12
-                              ),
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 20), // Increased from 15
-                          
-                          // Barcode - BIGGER
-                          Container(
-                            height: 50, // Increased from 40
-                            width: 250, // Increased from 200
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('images/barcode.png'),
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            child: const SizedBox.shrink(),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      
+                      const SizedBox(height: 6), // Added spacing between rows
+                      
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "WINGMAN:",
+                            style: TextStyle(
+                              fontSize: 16, // Increased from 12
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            booking['wingmanName'] ?? 'N/A',
+                            style: const TextStyle(
+                              fontSize: 16, // Increased from 12
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 12), // Increased spacing after these sections
+                      
+                      // Booking details - simplified format
+                      _buildReceiptRow("DATE", formattedDate),
+                      _buildReceiptRow("TIME", booking['time'] ?? 'N/A'),
+                      _buildReceiptRow("LOCATION", booking['location'] ?? 'N/A'),
+                      _buildReceiptRow(
+                        "DURATION", 
+                        (booking['duration'] ?? 'N/A').split('\n')[0]
+                      ),
+                      
+                      const SizedBox(height: 10),
+                      _buildDashedLine(),
+                      const SizedBox(height: 10),
+                      
+                      // Add Special Notes section
+                      if (booking['notes'] != null && booking['notes'].toString().isNotEmpty)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            
+                            const Text(
+                              "SPECIAL NOTES:",
+                              style: TextStyle(
+                                // Removed fontFamily: 'Courier'
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 8),
+                            
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: Text(
+                                booking['notes'].toString(),
+                                style: const TextStyle(
+                                  // Removed fontFamily: 'Courier'
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      
+                      const SizedBox(height: 12),
+                      _buildDashedLine(),
+                      const SizedBox(height: 12),
+                      
+                      // Items section
+                      const Text(
+                        "ITEMS",
+                        style: TextStyle(
+                          // Removed fontFamily: 'Courier'
+                          fontSize: 16, // Increased from 14
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // First item: Duration
+                      _buildItemRow(
+                        (booking['duration'] ?? 'N/A').split('\n')[0],
+                        _extractPrice(booking['duration'] ?? '₱0')
+                      ),
+                      
+                      // Purpose items
+                      ...List.generate(
+                        purposes.length,
+                        (index) {
+                          final purpose = purposes[index];
+                          final parts = purpose.split('\n');
+                          final name = parts[0];
+                          final price = parts.length > 1 ? parts[1] : '₱0';
+                          return _buildItemRow(name, price);
+                        },
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      _buildDashedLine(),
+                      const SizedBox(height: 12),
+                      
+                      // Total section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "TOTAL",
+                            style: TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 18, // Increased from 16
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "₱${NumberFormat('#,###').format(booking['totalPrice'] ?? 0)}",
+                            style: const TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 18, // Increased from 16
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 10),
+                      
+                      // Payment method
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "PAYMENT METHOD:",
+                            style: TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            booking['paymentMethod'] ?? 'N/A',
+                            style: const TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 15),
+                      _buildDashedLine(),
+                      const SizedBox(height: 15),
+                      
+                      // Status info with normal font
+                      if (booking['cancelled'] == true)
+                        const Center(
+                          child: Text(
+                            "*** CANCELLED ***",
+                            style: TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 20, // Increased from 16 to 20
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        
+                      if (booking['completed'] == true && booking['cancelled'] != true)
+                        const Center(
+                          child: Text(
+                            "*** COMPLETED ***",
+                            style: TextStyle(
+                              // Removed fontFamily: 'Courier'
+                              fontSize: 20, // Increased from 16 to 20
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
+                      
+                      const SizedBox(height: 20), // Increased from 15
+                      
+                      // Thank you notes with normal font
+                      const Center(
+                        child: Text(
+                          "Thank you for using Wingr!",
+                          style: TextStyle(
+                            // Removed fontFamily: 'Courier'
+                            fontSize: 14, // Increased from 12
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 6),
+                      const Center(
+                        child: Text(
+                          "See you next time!",
+                          style: TextStyle(
+                            // Removed fontFamily: 'Courier'
+                            fontSize: 14, // Increased from 12
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20), // Increased from 15
+                      
+                      // Barcode - BIGGER
+                      Container(
+                        height: 50, // Increased from 40
+                        width: 250, // Increased from 200
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('images/barcode.png'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        child: const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               
@@ -529,35 +513,4 @@ class ReceiptPage extends StatelessWidget {
       ),
     );
   }
-}
-
-// Custom clipper to create zigzag receipt top edge - MORE VISIBLE
-class ReceiptTopClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    
-    // Left edge
-    path.lineTo(0, size.height);
-    
-    // Bottom edge with zigzag pattern - zigzags made deeper
-    final zigzagWidth = size.width / 15; // Fewer, wider zigzags (was 20)
-    final zigzagHeight = 10.0; // Increased from 5.0 to make zigzags deeper/more visible
-    var currentX = 0.0;
-    
-    while (currentX < size.width) {
-      path.lineTo(currentX + zigzagWidth / 2, size.height - zigzagHeight);
-      path.lineTo(currentX + zigzagWidth, size.height);
-      currentX += zigzagWidth;
-    }
-    
-    // Right and top edges
-    path.lineTo(size.width, 0);
-    path.close();
-    
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
