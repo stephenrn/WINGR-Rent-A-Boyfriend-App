@@ -350,9 +350,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
             color: Color(0xFFF6FF52), // Yellow background
             boxShadow: [
               BoxShadow(
-                color: Colors.black,
-                offset: Offset(0, 4),
-                blurRadius: 0,
+                color: Color.fromARGB(255, 0, 0, 0),
+                offset: Offset(0, 0.5),
+                blurRadius: 5, // Added blur to shadow
               ),
             ],
           ),
@@ -369,13 +369,13 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   fit: BoxFit.contain,
                 ),
               ),
-              leadingWidth: 60, // Width for logo
+              leadingWidth: 80, // Width for logo
               // WINGR title instead of wingman's dashboard 
               title: const Text(
                 "WINGR",
                 style: TextStyle(
                   fontFamily: 'Futura',
-                  fontSize: 28,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                   letterSpacing: 1,
@@ -410,8 +410,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                 // Close button using closeButton.png
                 Container(
                   margin: const EdgeInsets.only(right: 16.0),
-                  width: 50,
-                  height: 50,
+                  width: 70,
+                  height: 70,
                   child: GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Image.asset(
@@ -925,8 +925,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               // Total bookings stat - Now takes full width
               Container(
                 width: double.infinity,
-                height: 85,
-                padding: const EdgeInsets.all(16),
+                height: 65,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced padding
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -954,7 +954,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                     Text(
                       "${_pastBookings.length}",
                       style: const TextStyle(
-                        fontSize: 32,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -965,8 +965,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               // Completed bookings stat - Now takes full width
               Container(
                 width: double.infinity,
-                height: 85,
-                padding: const EdgeInsets.all(16),
+                height: 65,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced padding
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -994,7 +994,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                     Text(
                       "$totalCompletedBookings",
                       style: const TextStyle(
-                        fontSize: 32,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -1092,7 +1092,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                                 "USERNAME",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 18, // Increased from 14 to 18
                                   fontFamily: 'Futura',
                                 ),
                               ),
@@ -1103,7 +1103,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                                 "DATE",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 18, // Increased from 14 to 18
                                   fontFamily: 'Futura',
                                 ),
                               ),
@@ -1115,7 +1115,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                                 textAlign: TextAlign.end,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 18, // Increased from 14 to 18
                                   fontFamily: 'Futura',
                                 ),
                               ),
@@ -1471,7 +1471,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                         child: const Text(
                           "CANCELLED",
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 8,
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
                           ),
