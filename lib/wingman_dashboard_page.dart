@@ -360,10 +360,20 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              centerTitle: true,
-              title: Text(
-                "${widget.wingmanName}'s Dashboard",
-                style: const TextStyle(
+              automaticallyImplyLeading: false,
+              // Leading section with logo
+              leading: Container(
+                padding: const EdgeInsets.only(left: 16),
+                child: Image.asset(
+                  'images/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              leadingWidth: 60, // Width for logo
+              // WINGR title instead of wingman's dashboard 
+              title: const Text(
+                "WINGR",
+                style: TextStyle(
                   fontFamily: 'Futura',
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -371,16 +381,17 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   letterSpacing: 1,
                 ),
               ),
-              automaticallyImplyLeading: false,
+              titleSpacing: 0,
               actions: [
+                // Storage button - moved to actions area with icon only
                 Container(
-                  margin: const EdgeInsets.only(right: 16.0),
-                  width: 60,
-                  height: 60,
+                  margin: const EdgeInsets.only(right: 10.0),
+                  width: 50,
+                  height: 50,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(25),
                       border: Border.all(color: Colors.black, width: 2),
                       boxShadow: const [
                         BoxShadow(
@@ -391,8 +402,33 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                       ],
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.black, size: 28),
-                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.storage, color: Colors.black, size: 24),
+                      onPressed: () => _showLocalStorageViewer(),
+                    ),
+                  ),
+                ),
+                // Close button using closeButton.png
+                Container(
+                  margin: const EdgeInsets.only(right: 16.0),
+                  width: 50,
+                  height: 50,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Image.asset(
+                      'images/closeButton.png',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red[600],
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: const Icon(Icons.close, color: Colors.white),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -450,16 +486,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         ],
       ),
       
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showLocalStorageViewer();
-        },
-        backgroundColor: const Color(0xFFF6FF52),
-        foregroundColor: Colors.black,
-        elevation: 4,
-        label: const Text('Storage', style: TextStyle(fontWeight: FontWeight.bold)),
-        icon: const Icon(Icons.storage),
-      ),
+      // Remove FloatingActionButton as storage button is now in AppBar
+      // floatingActionButton: ... (removed)
     );
   }
   
