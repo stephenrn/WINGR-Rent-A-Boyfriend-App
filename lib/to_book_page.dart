@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:wingr/payment_page.dart';
 
 class ToBookPage extends StatefulWidget {
   final String wingmanName;
@@ -283,7 +284,7 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       // Duration dropdown - Updated to handle nullable value
                       _buildDropdownField(
-                        title: "Duration & Price",
+                        title: "Duration",
                         value: _selectedDuration,
                         items: _durationOptions,
                         hint: "Select duration",
@@ -393,7 +394,7 @@ class _ToBookPageState extends State<ToBookPage> {
                         // Get the list of selected purposes
                         final selectedPurposesList = _selectedPurposes.entries
                             .where((entry) => entry.value)
-                            .map((entry) => entry.key.split('\n')[0])
+                            .map((entry) => entry.key) // Keep the full string with price
                             .toList();
                         
                         if (selectedPurposesList.isEmpty) {
@@ -405,11 +406,43 @@ class _ToBookPageState extends State<ToBookPage> {
                             ),
                           );
                         } else {
-                          // Proceed with the selected purposes
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Booking ${widget.wingmanName} - Processing...'),
-                              backgroundColor: const Color(0xFF52FF68),
+                          // Calculate total price
+                          int totalPrice = 0;
+                          
+                          // Add duration price
+                          final durationPrice = int.parse(_selectedDuration!.split('\n')[1]
+                              .replaceAll('₱', '')
+                              .replaceAll(',', ''));
+                          totalPrice += durationPrice;
+                          
+                          // Add purpose prices
+                          for (String purpose in selectedPurposesList) {
+                            final purposePrice = int.parse(purpose.split('\n')[1]
+                                .replaceAll('₱', '')
+                                .replaceAll(',', ''));
+                            totalPrice += purposePrice;
+                          }
+                          
+                          // For payment page display purposes, get purpose names without prices
+                          final purposeNames = selectedPurposesList
+                              .map((purpose) => purpose.split('\n')[0])
+                              .toList();
+                          
+                          // Navigate to payment page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentPage(
+                                wingmanName: widget.wingmanName,
+                                wingmanCardImage: widget.wingmanCardImage,
+                                location: _locationController.text,
+                                date: _selectedDate!,
+                                time: _selectedTime!,
+                                duration: _selectedDuration!,
+                                purposes: selectedPurposesList, // Pass full strings with prices
+                                notes: _notesController.text,
+                                totalPrice: totalPrice,
+                              ),
                             ),
                           );
                         }
