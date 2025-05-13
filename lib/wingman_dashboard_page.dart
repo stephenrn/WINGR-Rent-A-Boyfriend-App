@@ -350,9 +350,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
             color: Color(0xFFF6FF52), // Yellow background
             boxShadow: [
               BoxShadow(
-                color: Colors.black26,
+                color: Colors.black,
                 offset: Offset(0, 4),
-                blurRadius: 4,
+                blurRadius: 0,
               ),
             ],
           ),
@@ -395,9 +395,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                       border: Border.all(color: Colors.black, width: 2),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black38,
-                          offset: Offset(0, 2),
-                          blurRadius: 2,
+                          color: Colors.black,
+                          offset: Offset(0, 3),
+                          blurRadius: 0,
                         ),
                       ],
                     ),
@@ -510,9 +510,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               border: Border.all(color: Colors.black, width: 2.5),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.black45,
+                  color: Colors.black,
                   offset: Offset(0, 4),
-                  blurRadius: 4,
+                  blurRadius: 0,
                 ),
               ],
             ),
@@ -527,9 +527,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                       border: Border.all(color: Colors.black, width: 2),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black38,
-                          offset: Offset(0, 2),
-                          blurRadius: 3,
+                          color: Colors.black,
+                          offset: Offset(0, 3),
+                          blurRadius: 0,
                         ),
                       ],
                     ),
@@ -665,9 +665,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
               border: Border.all(color: Colors.black, width: 2.5),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.black45,
+                  color: Colors.black,
                   offset: Offset(0, 4),
-                  blurRadius: 4,
+                  blurRadius: 0,
                 ),
               ],
             ),
@@ -934,9 +934,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   border: Border.all(color: Colors.black, width: 2),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: Colors.black,
                       offset: Offset(0, 3),
-                      blurRadius: 3,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -974,9 +974,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   border: Border.all(color: Colors.black, width: 2),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: Colors.black,
                       offset: Offset(0, 3),
-                      blurRadius: 3,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -1018,9 +1018,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                   border: Border.all(color: Colors.black, width: 2),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: Colors.black,
                       offset: Offset(0, 3),
-                      blurRadius: 3,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -1065,9 +1065,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                     border: Border.all(color: Colors.black, width: 2.5),
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black45,
+                        color: Colors.black,
                         offset: Offset(0, 4),
-                        blurRadius: 4,
+                        blurRadius: 0,
                       ),
                     ],
                   ),
@@ -1168,9 +1168,9 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         boxShadow: [
           if (!isCancelled)
             const BoxShadow(
-              color: Colors.black38,
+              color: Colors.black,
               offset: Offset(0, 4),
-              blurRadius: 4,
+              blurRadius: 0,
             ),
         ],
       ),
