@@ -27,7 +27,22 @@ class _ToBookPageState extends State<ToBookPage> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   String _selectedDuration = "2 Hours\n₱400";
-  String _selectedPurpose = "Café or Chill Talk\n₱300";
+  
+  // Replace selected purpose with a map to track multiple selections
+  Map<String, bool> _selectedPurposes = {
+    "Movie Date\n₱500": false,
+    "Family/Event Companion\n₱1,000": false,
+    "Shopping Buddy\n₱400": false,
+    "Study Buddy / Tutor\n₱300": false,
+    "Emotional Support\n₱400": false,
+    "Virtual Date\n₱200": false,
+    "Travel Companion (Day Tour)\n₱2,000": false,
+    "Gym Partner\n₱350": false,
+    "Photoshoot Partner\n₱500": false,
+    "Café or Chill Talk\n₱300": true, // Default selected
+    "Nightlife Companion\n₱1,000": false,
+    "Pet Date\n₱400": false
+  };
   
   // Duration options with pricing
   final List<String> _durationOptions = [
@@ -39,21 +54,7 @@ class _ToBookPageState extends State<ToBookPage> {
     "Overnight (12 Hours)\n₱2,000"
   ];
 
-  // Purpose options with pricing
-  final List<String> _purposeOptions = [
-    "Movie Date\n₱500",
-    "Family/Event Companion\n₱1,000",
-    "Shopping Buddy\n₱400",
-    "Study Buddy / Tutor\n₱300",
-    "Emotional Support\n₱400",
-    "Virtual Date\n₱200",
-    "Travel Companion (Day Tour)\n₱2,000",
-    "Gym Partner\n₱350",
-    "Photoshoot Partner\n₱500",
-    "Café or Chill Talk\n₱300",
-    "Nightlife Companion\n₱1,000",
-    "Pet Date\n₱400"
-  ];
+  // Remove purpose options as we now use the map keys
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -122,7 +123,7 @@ class _ToBookPageState extends State<ToBookPage> {
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
-            color: Color(0xFF52FF68), // Changed to green
+            color: Color(0xFF52FF68),
             border: Border(
               bottom: BorderSide(
                 color: Colors.black,
@@ -134,43 +135,47 @@ class _ToBookPageState extends State<ToBookPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            // Increase logo size
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 5.0),
-              child: Image.asset(
-                'images/logo.png',
-                height: 70, // Increased from default
-                width: 70, // Increased from default
+            
+            // Fix logo size issue
+            leading: Container(
+              padding: EdgeInsets.only(left: 20), // Remove padding
+              child: FittedBox(
                 fit: BoxFit.contain,
+                child: Image.asset(
+                  'images/logo.png',
+                ),
               ),
             ),
+            leadingWidth: 80, // Give more width to the leading widget
+            
             // Make close button bigger
             actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Image.asset(
-                    'images/closeButton.png',
-                    width: 55, // Increased size
-                    height: 55, // Increased size
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 50, // Increased from 40
-                        height: 50, // Increased from 40
-                        decoration: BoxDecoration(
-                          color: Colors.red[600],
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: const Icon(Icons.close, color: Colors.white, size: 30), // Increased icon size
-                      );
-                    },
+              Container(
+                margin: const EdgeInsets.only(right: 8.0),
+                width: 60, // Fixed width container
+                height: 60, // Fixed height container
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Image.asset(
+                      'images/closeButton.png',
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red[600],
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: const Icon(Icons.close, color: Colors.white),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ],
+            
             title: const Text(
               "Booking",
               style: TextStyle(
@@ -286,18 +291,31 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Purpose of booking dropdown with pricing
-                      _buildDropdownField(
-                        title: "Purpose of Booking",
-                        value: _selectedPurpose,
-                        items: _purposeOptions,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedPurpose = value;
-                            });
-                          }
-                        },
+                      // Purpose of booking as checkboxes
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Purpose of Booking",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: _buildPurposeCheckboxes(),
+                            ),
+                          ),
+                        ],
                       ),
                       
                       const SizedBox(height: 20),
@@ -334,13 +352,29 @@ class _ToBookPageState extends State<ToBookPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Proceed to next page or submit booking
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Booking ${widget.wingmanName} - Processing...'),
-                            backgroundColor: const Color(0xFF52FF68), // Changed to green
-                          ),
-                        );
+                        // Get the list of selected purposes
+                        final selectedPurposesList = _selectedPurposes.entries
+                            .where((entry) => entry.value)
+                            .map((entry) => entry.key.split('\n')[0])
+                            .toList();
+                        
+                        if (selectedPurposesList.isEmpty) {
+                          // Show error if no purpose is selected
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select at least one purpose for booking'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else {
+                          // Proceed with the selected purposes
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Booking ${widget.wingmanName} - Processing...'),
+                              backgroundColor: const Color(0xFF52FF68),
+                            ),
+                          );
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -569,5 +603,69 @@ class _ToBookPageState extends State<ToBookPage> {
         ),
       ],
     );
+  }
+
+  // Add a method to build the purpose checkboxes
+  List<Widget> _buildPurposeCheckboxes() {
+    List<Widget> checkboxes = [];
+    
+    _selectedPurposes.forEach((purpose, isSelected) {
+      // Split purpose text and price
+      final parts = purpose.split('\n');
+      final option = parts[0];
+      final price = parts.length > 1 ? parts[1] : "";
+      
+      checkboxes.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Checkbox(
+                  value: isSelected,
+                  activeColor: const Color(0xFF52FF68),
+                  side: const BorderSide(color: Colors.black, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPurposes[purpose] = value!;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  option,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Text(
+                price,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF52FF68),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      
+      // Add divider between items (except after the last item)
+      if (purpose != _selectedPurposes.keys.last) {
+        checkboxes.add(const Divider(height: 1, thickness: 1));
+      }
+    });
+    
+    return checkboxes;
   }
 }
