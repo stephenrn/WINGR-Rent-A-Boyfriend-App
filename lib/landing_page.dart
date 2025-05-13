@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'select_user_account_page.dart';
+import 'wingman_sign_in_page.dart'; // Import the wingman sign-in page
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -146,7 +147,13 @@ class LandingPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25), // Increased from 20
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            // Navigate to wingman sign-in page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const WingmanSignInPage()),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFF5CA8), // Hot pink
                             shape: RoundedRectangleBorder(
