@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'booking_page.dart';
 import 'profile_page.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeNavigation extends StatefulWidget {
   final String username;
@@ -48,6 +50,11 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
       initialPage: 1,
       keepPage: true,
     );
+
+    // Check for notifications after widget is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForNotifications();
+    });
   }
   
   void _updateTabAnimations(int selectedIndex) {
@@ -215,6 +222,126 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
           ),
         );
       }
+    );
+  }
+
+  // Check for notifications for the current user
+  void _checkForNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? notificationsJson = prefs.getString('user_notifications');
+    
+    if (notificationsJson != null) {
+      try {
+        final List<dynamic> allNotifications = json.decode(notificationsJson);
+        
+        // Filter unread notifications for current user
+        final userNotifications = allNotifications
+            .where((notification) => 
+                notification['username'] == widget.username && 
+                notification['read'] == false)
+            .toList();
+        
+        // Show notifications if any exist
+        if (userNotifications.isNotEmpty) {
+          // Show the first unread notification
+          _showNotificationDialog(userNotifications[0]);
+          
+          // Mark notification as read
+          for (var notification in allNotifications) {
+            if (notification['id'] == userNotifications[0]['id']) {
+              notification['read'] = true;
+              break;
+            }
+          }
+          
+          // Save updated notifications
+          await prefs.setString('user_notifications', json.encode(allNotifications));
+        }
+      } catch (e) {
+        debugPrint('Error checking notifications: $e');
+      }
+    }
+  }
+  
+  // Show notification dialog
+  void _showNotificationDialog(Map<String, dynamic> notification) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.notifications_active, color: Colors.red),
+              SizedBox(width: 8),
+              Text(
+                "Booking Update",
+                style: TextStyle(fontFamily: 'Futura'),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                notification['message'] ?? 'You have a notification',
+                style: TextStyle(fontFamily: 'Futura', fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Message from Wingman:",
+                style: TextStyle(
+                  fontFamily: 'Futura', 
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Text(
+                  notification['details'] ?? 'No additional details',
+                  style: TextStyle(
+                    fontFamily: 'Futura',
+                    fontStyle: notification['details']?.isEmpty ?? true 
+                        ? FontStyle.italic 
+                        : FontStyle.normal,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.black, width: 2),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF6FF52), // Yellow
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.black, width: 1.5),
+                ),
+              ),
+              child: Text(
+                "OK",
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

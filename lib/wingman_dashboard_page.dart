@@ -142,12 +142,95 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     }
   }
   
-  // Cancel booking
+  // Cancel booking - updated with confirmation dialog and message
   void _cancelBooking(int index, bool isPast) async {
+    // Show confirmation dialog with message text field
+    final TextEditingController messageController = TextEditingController();
+    
+    final bool confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Cancel Booking?",
+            style: TextStyle(fontFamily: 'Futura'),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Are you sure you want to cancel this booking? Please provide a reason for cancellation:",
+                style: TextStyle(fontFamily: 'Futura'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: messageController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: "Enter cancellation reason...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Colors.black, width: 2),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontFamily: 'Futura',
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  "Confirm Cancellation",
+                  style: TextStyle(
+                    fontFamily: 'Futura',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+    
+    if (!confirmed) return;
+    
+    // Process cancellation
     final booking = isPast ? _pastBookings[index] : _upcomingBookings[index];
     booking['cancelled'] = true;
+    booking['cancellationMessage'] = messageController.text;
+    booking['cancelledBy'] = 'wingman';
+    booking['cancellationDate'] = DateTime.now().toIso8601String();
     
     await _updateBookingInStorage(booking);
+    
+    // Also store the notification for the user
+    await _storeNotificationForUser(
+      username: booking['username'], 
+      message: "Your booking with ${widget.wingmanName} on ${DateFormat('MMM d, yyyy').format(DateTime.parse(booking['date']))} was cancelled.",
+      details: messageController.text,
+      bookingId: booking['id'],
+    );
+    
     _loadBookings();
     
     if (mounted) {
@@ -158,6 +241,41 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
         ),
       );
     }
+  }
+  
+  // Method to store a notification for the user
+  Future<void> _storeNotificationForUser({
+    required String username, 
+    required String message,
+    required String details,
+    required String bookingId,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Create notification data structure
+    final notification = {
+      'id': 'N${DateTime.now().millisecondsSinceEpoch}',
+      'username': username,
+      'message': message,
+      'details': details,
+      'bookingId': bookingId,
+      'date': DateTime.now().toIso8601String(),
+      'read': false,
+    };
+    
+    // Get existing notifications
+    List<dynamic> notifications = [];
+    final String? notificationsJson = prefs.getString('user_notifications');
+    
+    if (notificationsJson != null) {
+      notifications = json.decode(notificationsJson);
+    }
+    
+    // Add new notification
+    notifications.add(notification);
+    
+    // Save updated notifications
+    await prefs.setString('user_notifications', json.encode(notifications));
   }
   
   // Delete booking from history
