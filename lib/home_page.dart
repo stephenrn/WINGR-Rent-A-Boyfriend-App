@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wingr/to_book_page.dart';
 
 // Convert to StatefulWidget to manage page state
 class HomePage extends StatefulWidget {
@@ -288,19 +289,33 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   
-                  // Center - Heart image without container
-                  Image.asset(
-                    'images/pixel_heart.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.favorite,
-                        size: 100,
-                        color: Color(0xFFFF529B),
+                  // Center - Heart image with booking navigation
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to booking page with current profile
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ToBookPage(
+                            wingmanName: _profiles[_currentIndex]['name']!,
+                            wingmanCardImage: _profiles[_currentIndex]['card']!,
+                          ),
+                        ),
                       );
                     },
+                    child: Image.asset(
+                      'images/pixel_heart.png',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.favorite,
+                          size: 100,
+                          color: Color(0xFFFF529B),
+                        );
+                      },
+                    ),
                   ),
                   
                   // Right arrow button - Now with next functionality
