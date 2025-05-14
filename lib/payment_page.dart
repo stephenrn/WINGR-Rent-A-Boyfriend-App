@@ -5,9 +5,12 @@ import 'package:wingr/home_navigation.dart';
 import 'dart:convert';
 
 import 'package:wingr/receipt_page.dart';
-// Import BookingPage
 
+// Final step in the booking workflow - Handles payment processing
+// Confirms booking details and provides payment options
 class PaymentPage extends StatefulWidget {
+  // Comprehensive booking data collection
+  // All details needed to create a complete booking record
   final String wingmanName;
   final String wingmanCardImage;
   final String location;
@@ -38,7 +41,8 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  // Payment method options with corresponding images
+  // Payment method options - Visual representation helps users select payment type
+  // Each payment method has a corresponding image for recognition
   final Map<String, String> _paymentMethods = {
     'Credit/Debit Card': 'images/creditDebit.png',
     'PayPal': 'images/paypal.png',
@@ -47,11 +51,13 @@ class _PaymentPageState extends State<PaymentPage> {
     'Bank Transfer': 'images/bankTransfer.png',
   };
   
-  // Selected payment method
+  // Payment selection state management
   String? _selectedPaymentMethod;
 
-  // Process payment
+  // Payment processing workflow - Handles data validation, storage and navigation
+  // Creates a permanent record and updates the app state
   void _processPayment() async {
+    // Validation check - Prevent proceeding without payment method
     if (_selectedPaymentMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -62,7 +68,7 @@ class _PaymentPageState extends State<PaymentPage> {
       return;
     }
     
-    // Show processing message
+    // User feedback during processing - Improves perceived performance
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Processing payment of ₱${NumberFormat('#,###').format(widget.totalPrice)}...'),
@@ -70,7 +76,8 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
     
-    // Create booking object
+    // Data model construction - Creates complete booking record
+    // Links all booking parameters with payment information
     final booking = {
       'id': 'B${DateTime.now().millisecondsSinceEpoch}',
       'wingmanName': widget.wingmanName,
@@ -89,10 +96,10 @@ class _PaymentPageState extends State<PaymentPage> {
       'cancelled': false,
     };
     
-    // Save booking data
+    // Persistence layer - Saves booking to local storage
     await _saveBookingData(booking);
     
-    // Navigate to receipt page
+    // Navigation flow - Proceeds to receipt and completes booking journey
     if (mounted) {
       Navigator.push(
         context,
@@ -117,7 +124,8 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
   
-  // Save booking data to shared preferences
+  // Data persistence implementation - Handles storage of booking records
+  // Uses shared preferences as a lightweight data store
   Future<void> _saveBookingData(Map<String, dynamic> booking) async {
     final prefs = await SharedPreferences.getInstance();
     
@@ -138,6 +146,9 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F5F2),
+      
+      // Brand-consistent header with distinctive payment page color
+      // Maintains visual continuity while indicating a new transaction stage
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
@@ -209,13 +220,14 @@ class _PaymentPageState extends State<PaymentPage> {
         ),
       ),
       
+      // Main content area - User interaction zone
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Wingman card image
+              // Visual confirmation - Shows selected wingman to reinforce choice
               Center(
                 child: Image.asset(
                   widget.wingmanCardImage,
@@ -226,7 +238,8 @@ class _PaymentPageState extends State<PaymentPage> {
               
               const SizedBox(height: 24),
               
-              // Payment Details Card
+              // Transaction details card - Key payment information
+              // Shows itemized breakdown of costs for transparency
               Container(
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -245,7 +258,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
+                    // Section header
                     const Text(
                       "Payment Details",
                       style: TextStyle(
@@ -258,11 +271,11 @@ class _PaymentPageState extends State<PaymentPage> {
                     
                     const SizedBox(height: 24),
                     
-                    // Booking summary section
+                    // Itemized booking information - Shows what user is paying for
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Duration with price
+                        // Duration line item with associated cost
                         _buildDetailRow(
                           title: "Duration",
                           value: widget.duration.split('\n')[0],
@@ -271,7 +284,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         
                         const SizedBox(height: 16),
                         
-                        // Purpose(s) of booking with prices
+                        // Purpose selection summary - Lists all selected services
                         const Text(
                           "Purpose of Booking:",
                           style: TextStyle(
@@ -282,7 +295,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         
                         const SizedBox(height: 8),
                         
-                        // List all selected purposes
+                        // Dynamic list based on user selections
                         ...widget.purposes.map((purpose) {
                           final parts = purpose.split('\n');
                           return Padding(
@@ -313,7 +326,8 @@ class _PaymentPageState extends State<PaymentPage> {
                       color: Colors.black26,
                     ),
                     
-                    // Total price
+                    // Total amount - Prominently displayed for transparency
+                    // Visually distinguished from individual line items
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -337,7 +351,8 @@ class _PaymentPageState extends State<PaymentPage> {
                     
                     const SizedBox(height: 24),
                     
-                    // Payment method selection
+                    // Payment method selector - Key user decision point
+                    // Visually distinctive options for different payment types
                     const Text(
                       "Select Payment Method",
                       style: TextStyle(
@@ -349,7 +364,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     
                     const SizedBox(height: 12),
                     
-                    // Payment options with images - redesigned
+                    // Radio button list with custom styling for each payment option
                     ..._paymentMethods.entries.map((entry) {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -416,7 +431,8 @@ class _PaymentPageState extends State<PaymentPage> {
               
               const SizedBox(height: 32),
               
-              // Pay button
+              // Primary action button - Final commitment to payment
+              // Clear call-to-action with payment terminology
               Container(
                 width: double.infinity,
                 height: 65,
@@ -471,7 +487,8 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
   
-  // Helper widget to display a detail row with title and value
+  // Helper component - Consistent row styling for detail items
+  // Creates visual structure for payment information
   Widget _buildDetailRow({required String title, required String value, String? price}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

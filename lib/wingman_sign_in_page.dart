@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wingr/wingman_dashboard_page.dart';
 
+// Professional entry point - Authentication flow for service providers
+// Allows wingmen to identify themselves and access their dashboards
 class WingmanSignInPage extends StatefulWidget {
   const WingmanSignInPage({super.key});
 
@@ -9,7 +11,8 @@ class WingmanSignInPage extends StatefulWidget {
 }
 
 class _WingmanSignInPageState extends State<WingmanSignInPage> {
-  // List of wingmen profiles
+  // Available wingman profiles - Service provider database
+  // Contains identity information and profile images
   final List<Map<String, String>> _wingmen = [
     {
       'name': 'Stephen',
@@ -25,10 +28,12 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
     },
   ];
   
-  // Current page index for PageView
+  // Visual navigation state management
+  // Tracks which profile is currently being viewed
   int _currentIndex = 0;
   
-  // PageController for horizontal sliding
+  // Card carousel controller - Manages horizontal profile browsing
+  // Enhanced with partial visibility of adjacent cards
   final PageController _pageController = PageController(
     viewportFraction: 0.8, // Show a bit of the next/previous card
   );
@@ -55,12 +60,14 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6FF52), // Yellow background
+      // Brand-consistent styling - Maintains visual identity
+      backgroundColor: const Color(0xFFF6FF52),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top bar with logo, circles, and close button
+            // Header component - App branding and navigation controls
+            // Consistent with other screens for visual cohesion
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Row(
@@ -135,7 +142,8 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
               ),
             ),
             
-            // "Who is this?" title (bigger)
+            // Selection prompt - Clear user instruction
+            // Large text creates visual emphasis on the task
             Padding(
               padding: const EdgeInsets.fromLTRB(32.0, 24.0, 32.0, 16.0),
               child: Text(
@@ -149,7 +157,8 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
               ),
             ),
             
-            // Horizontal sliding cards (bigger and portrait)
+            // Interactive carousel - Visual profile selection
+            // Dynamic card scaling provides affordance for selection
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -233,7 +242,8 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
               ),
             ),
             
-            // Wingman name below the card (bigger)
+            // Identity confirmation - Dynamic profile name display
+            // Updates with smooth animation when selection changes
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 30.0),
@@ -255,7 +265,8 @@ class _WingmanSignInPageState extends State<WingmanSignInPage> {
               ),
             ),
             
-            // Page indicators
+            // Pagination indicator - Visual feedback on browsing position
+            // Shows available wingmen and highlights current selection
             Container(
               padding: const EdgeInsets.only(bottom: 50.0),
               child: Row(

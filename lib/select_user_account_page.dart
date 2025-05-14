@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'home_navigation.dart';
-// Import ToBookPage here
 
+// User account management screen - Entry point after role selection
+// Handles user creation, selection, and deletion with persistent storage
 class SelectUserAccountPage extends StatefulWidget {
   const SelectUserAccountPage({super.key});
 
@@ -12,7 +13,8 @@ class SelectUserAccountPage extends StatefulWidget {
 }
 
 class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
-  // Initialize with empty list, will load from storage
+  // User data collection - Stored using persistent local storage
+  // Contains list of registered users with their profile information
   List<Map<String, String>> users = [];
   
   final TextEditingController _nameController = TextEditingController();
@@ -20,11 +22,12 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
   @override
   void initState() {
     super.initState();
-    // Load users from local storage when widget initializes
+    // Data initialization - Loads existing user accounts on startup
     _loadUsers();
   }
 
-  // Load users from SharedPreferences
+  // Persistence layer - Retrieves user data from device storage
+  // Demonstrates data persistence pattern using SharedPreferences
   Future<void> _loadUsers() async {
     final prefs = await SharedPreferences.getInstance();
     final String? usersJson = prefs.getString('users');
@@ -47,14 +50,16 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     }
   }
 
-  // Save users to SharedPreferences
+  // Data management - Stores user records in persistent storage
+  // Updates local storage whenever user collection changes
   Future<void> _saveUsers() async {
     final prefs = await SharedPreferences.getInstance();
     final String usersJson = jsonEncode(users);
     await prefs.setString('users', usersJson);
   }
 
-  // Add a new user and save to storage
+  // User creation operation - Adds new user and persists the change
+  // Maintains consistent data state between memory and storage
   void _addUser(String name) {
     if (name.trim().isNotEmpty) {
       setState(() {
@@ -64,7 +69,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     }
   }
 
-  // Add method to delete a user
+  // User deletion operation - Removes selected user from system
+  // Updates both in-memory collection and persistent storage
   void _deleteUser(int index) {
     setState(() {
       users.removeAt(index);
@@ -72,7 +78,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     _saveUsers(); // Update storage after deletion
   }
 
-  // Method to show delete confirmation dialog
+  // Confirmation workflow - Two-step deletion process with verification
+  // Prevents accidental deletion of user accounts
   void _showDeleteConfirmationDialog(int index) {
     showDialog(
       context: context,
@@ -241,7 +248,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     super.dispose();
   }
 
-  // Method to show the create user dialog
+  // User creation workflow - Modal form with validation
+  // Provides structured input experience for adding new users
   void _showCreateUserDialog() {
     showDialog(
       context: context,
@@ -438,7 +446,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     );
   }
 
-  // Method to show local storage contents
+  // Development diagnostics - Shows raw storage data
+  // Useful for debugging and demonstrating data persistence
   void _showLocalStorageDialog() async {
     final prefs = await SharedPreferences.getInstance();
     final String? usersJson = prefs.getString('users');
@@ -560,13 +569,14 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6FF52),
       body: SafeArea(
-        child: Stack(  // Changed to Stack to position the debug button
+        child: Stack(
           children: [
-            // Main content
+            // Main UI structure - Core content and navigation controls
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top bar with logo, status dots, and close button - BIGGER
+                // Header with app branding - Consistent visual elements
+                // Contains logo, status indicators, and navigation controls
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // Increased padding
                   child: SizedBox(
@@ -646,7 +656,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                   ),
                 ),
                 
-                // Title section - BIGGER
+                // Screen title - Clear descriptive header
+                // Large text creates visual hierarchy and importance
                 Padding(
                   padding: const EdgeInsets.only(left: 32.0, top: 32.0, bottom: 24.0), // Increased padding
                   child: Column(
@@ -676,7 +687,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                   ),
                 ),
                 
-                // Create New User button - BIGGER - NOW WITH FUNCTIONALITY
+                // Primary action button - Creates new user accounts
+                // Prominently positioned for key user operation
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0), // Increased padding
                   child: Container(
@@ -714,12 +726,14 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                   ),
                 ),
                 
-                // User list or empty state
+                // Content area with conditional rendering
+                // Shows either user list or empty state based on data
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: users.isEmpty 
-                      // Show empty state when no users exist
+                      // Empty state pattern - Provides guidance when no data exists
+                      // Improves first-time user experience with clear instructions
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -782,7 +796,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
                             ],
                           ),
                         )
-                      // Show regular list if there are users
+                      // Data display pattern - Shows user accounts as interactive cards
+                      // Each card provides selection and management functionality
                       : ListView.builder(
                           itemCount: users.length,
                           itemBuilder: (context, index) {
@@ -887,7 +902,8 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
               ],
             ),
             
-            // Debug button to show local storage
+            // Developer tools - Provides access to diagnostic information
+            // Separate from main UI to maintain clean user experience
             Positioned(
               bottom: 16,
               left: 16,

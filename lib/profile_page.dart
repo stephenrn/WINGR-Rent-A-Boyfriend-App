@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'landing_page.dart'; // Import landing page for logout functionality
+import 'landing_page.dart';
 
+// User profile management screen - Handles user identity and app settings
+// Provides account management and authentication controls
 class ProfilePage extends StatelessWidget {
   final String username;
   
@@ -14,7 +16,8 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile header
+            // Section header - Profile identifier
+            // Maintains consistent typographic hierarchy with other screens
             const Text(
               "Profile",
               style: TextStyle(
@@ -26,7 +29,8 @@ class ProfilePage extends StatelessWidget {
             
             const SizedBox(height: 24),
             
-            // User info card - CENTERED
+            // User identity component - Visual representation of the user
+            // Presents user's information in a centralized card format
             Container(
               width: double.infinity, // Take full width for proper centering
               decoration: BoxDecoration(
@@ -45,7 +49,8 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center, // Center the column contents
                 children: [
-                  // Profile pic placeholder - centered
+                  // Avatar placeholder - Uses brand accent color scheme
+                  // Circular format maintains consistency with user profile patterns
                   Container(
                     width: 120,
                     height: 120,
@@ -64,7 +69,8 @@ class ProfilePage extends StatelessWidget {
                   
                   const SizedBox(height: 16),
                   
-                  // Username - centered
+                  // Dynamic username display - Shows current user identity
+                  // Fetched from authentication system
                   Text(
                     username,
                     style: const TextStyle(
@@ -77,7 +83,8 @@ class ProfilePage extends StatelessWidget {
                   
                   const SizedBox(height: 8),
                   
-                  // User type - centered
+                  // Account type indicator - Shows user classification
+                  // Distinguishes between different user roles in the system
                   const Text(
                     "Wingr User",
                     style: TextStyle(
@@ -92,7 +99,8 @@ class ProfilePage extends StatelessWidget {
             
             const SizedBox(height: 32),
             
-            // Settings options
+            // Account management options - User control panel
+            // Provides access to settings, help, and authentication controls
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -114,17 +122,23 @@ class ProfilePage extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
+                      // Settings entry point - Configuration access
                       _buildProfileOption(context, Icons.settings, "Settings"),
                       const Divider(height: 1, thickness: 1),
+                      
+                      // Help system access - User support
                       _buildProfileOption(context, Icons.help_outline, "Help"),
                       const Divider(height: 1, thickness: 1),
+                      
+                      // Authentication action - Session termination
+                      // Returns user to landing page and clears navigation stack
                       _buildProfileOption(
                         context, 
                         Icons.logout, 
                         "Log Out", 
                         isLogout: true,
                         onTap: () {
-                          // Log out functionality - navigate to landing page
+                          // Session termination and navigation reset
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (context) => const LandingPage()),
                             (route) => false, // Remove all routes from stack
@@ -142,6 +156,8 @@ class ProfilePage extends StatelessWidget {
     );
   }
   
+  // UI component builder - Creates consistent option tiles
+  // Visual pattern for all menu options with appropriate styling
   Widget _buildProfileOption(
     BuildContext context,
     IconData icon, 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Transaction confirmation component - Final step in booking workflow
+// Provides a physical receipt-like interface showing booking details
 class ReceiptPage extends StatelessWidget {
   final Map<String, dynamic> booking;
   final bool isWingman;
@@ -20,7 +22,9 @@ class ReceiptPage extends StatelessWidget {
     final purposes = booking['purposes'] ?? [];
     
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Background color change
+      backgroundColor: Colors.grey[200], // Neutral backdrop enhances receipt visibility
+      
+      // Header with distinctive blue branding - Consistent with payment flow
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
@@ -77,13 +81,13 @@ class ReceiptPage extends StatelessWidget {
         ),
       ),
       
-      // Paper receipt style body
+      // Main content - Receipt representation with paper-like styling
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // Paper receipt container
+              // Receipt container - Simulates physical receipt with shadows
               Container(
                 constraints: BoxConstraints(
                   maxWidth: 450, // Increased receipt width from 400 to 450
@@ -106,7 +110,7 @@ class ReceiptPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Added logo - BIGGER (kept only one logo instance)
+                      // Brand identity elements - Visual anchors
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                         child: Image.asset(
@@ -116,7 +120,6 @@ class ReceiptPage extends StatelessWidget {
                         ),
                       ),
                       
-                      // Receipt header with Futura font
                       const Center(
                         child: Text(
                           "WINGR",
@@ -131,7 +134,7 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 6),
                       
-                      // Remove duplicate padding section and keep content directly
+                      // Document identifier - Communicates purpose
                       const Text(
                         "BOOKING RECEIPT",
                         style: TextStyle(
@@ -143,7 +146,8 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 12),
                       
-                      // Receipt ID and date
+                      // Transaction metadata - Receipt tracking information
+                      // Includes unique ID and generation timestamp
                       Text(
                         "Receipt #: ${booking['id']?.substring(1, 9) ?? 'N/A'}",
                         style: const TextStyle(
@@ -172,7 +176,8 @@ class ReceiptPage extends StatelessWidget {
                       _buildDashedLine(),
                       const SizedBox(height: 12),
                       
-                      // Customer info - BIGGER
+                      // Participating parties - Key stakeholders in the transaction
+                      // Shows customer and service provider information
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -215,7 +220,8 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 12), // Increased spacing after these sections
                       
-                      // Booking details - simplified format
+                      // Service details - Core booking information
+                      // Structured layout of booking parameters
                       _buildReceiptRow("DATE", formattedDate),
                       _buildReceiptRow("TIME", booking['time'] ?? 'N/A'),
                       _buildReceiptRow("LOCATION", booking['location'] ?? 'N/A'),
@@ -228,7 +234,8 @@ class ReceiptPage extends StatelessWidget {
                       _buildDashedLine(),
                       const SizedBox(height: 10),
                       
-                      // Add Special Notes section
+                      // Special instructions - Optional additional context
+                      // Only displayed when notes are provided
                       if (booking['notes'] != null && booking['notes'].toString().isNotEmpty)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +277,8 @@ class ReceiptPage extends StatelessWidget {
                       _buildDashedLine(),
                       const SizedBox(height: 12),
                       
-                      // Items section
+                      // Itemized services - Detailed breakdown of charges
+                      // Shows each component that contributes to total
                       const Text(
                         "ITEMS",
                         style: TextStyle(
@@ -283,13 +291,13 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 12),
                       
-                      // First item: Duration
+                      // Primary service item - Duration based charge
                       _buildItemRow(
                         (booking['duration'] ?? 'N/A').split('\n')[0],
                         _extractPrice(booking['duration'] ?? '₱0')
                       ),
                       
-                      // Purpose items
+                      // Additional service items - Purpose based charges
                       ...List.generate(
                         purposes.length,
                         (index) {
@@ -305,7 +313,8 @@ class ReceiptPage extends StatelessWidget {
                       _buildDashedLine(),
                       const SizedBox(height: 12),
                       
-                      // Total section
+                      // Financial summary - Total transaction value
+                      // Visually highlighted as key information
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -330,7 +339,7 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 10),
                       
-                      // Payment method
+                      // Payment method reference - Indicates how service was paid
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -355,7 +364,8 @@ class ReceiptPage extends StatelessWidget {
                       _buildDashedLine(),
                       const SizedBox(height: 15),
                       
-                      // Status info with normal font
+                      // Status indicators - Visual cues for booking state
+                      // Conditionally shown based on booking status
                       if (booking['cancelled'] == true)
                         const Center(
                           child: Text(
@@ -384,7 +394,7 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 20), // Increased from 15
                       
-                      // Thank you notes with normal font
+                      // Brand messaging - Reinforces customer relationship
                       const Center(
                         child: Text(
                           "Thank you for using Wingr!",
@@ -409,7 +419,7 @@ class ReceiptPage extends StatelessWidget {
                       
                       const SizedBox(height: 20), // Increased from 15
                       
-                      // Barcode - BIGGER
+                      // Visual authenticity element - Completes receipt aesthetic
                       Container(
                         height: 50, // Increased from 40
                         width: 250, // Increased from 200
@@ -434,7 +444,8 @@ class ReceiptPage extends StatelessWidget {
     );
   }
   
-  // Helper method to extract price
+  // Price extraction utility - Isolates price component from text
+  // Handles the dual-part format used throughout the app (item\nprice)
   String _extractPrice(String text) {
     if (text.contains('\n')) {
       return text.split('\n')[1];
@@ -442,7 +453,8 @@ class ReceiptPage extends StatelessWidget {
     return text;
   }
   
-  // Helper method to create dashed lines
+  // Visual separator component - Creates receipt-like dashed divider
+  // Enhances the traditional paper receipt appearance
   Widget _buildDashedLine() {
     return Row(
       children: List.generate(
@@ -457,7 +469,8 @@ class ReceiptPage extends StatelessWidget {
     );
   }
   
-  // Helper method to create receipt rows - BIGGER
+  // Information row component - Displays label-value pairs
+  // Consistent formatting for receipt data fields
   Widget _buildReceiptRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3.0),
@@ -486,7 +499,8 @@ class ReceiptPage extends StatelessWidget {
     );
   }
   
-  // Helper method for item rows with prices - BIGGER
+  // Item listing component - Formats service items with prices
+  // Used for itemized breakdown of charges
   Widget _buildItemRow(String name, String price) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3.0),

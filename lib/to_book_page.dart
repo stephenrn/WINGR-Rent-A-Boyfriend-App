@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wingr/payment_page.dart';
 
+// Booking details collection page - Middle step in the booking workflow
+// Gathers all necessary information before proceeding to payment
 class ToBookPage extends StatefulWidget {
   final String wingmanName;
   final String wingmanCardImage;
@@ -19,19 +21,20 @@ class ToBookPage extends StatefulWidget {
 }
 
 class _ToBookPageState extends State<ToBookPage> {
-  // Form controller
+  // Form validation management
   final _formKey = GlobalKey<FormState>();
   
-  // Form field controllers
+  // User input controllers for text-based fields
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
   
-  // Selected values - Remove defaults
+  // Selection state management - All fields required for booking completion
   DateTime? _selectedDate; // Changed to nullable
   TimeOfDay? _selectedTime; // Changed to nullable
   String? _selectedDuration; // Changed to nullable
   
-  // Replace selected purpose with a map where all values are false (no defaults)
+  // Multi-selection state handling - Purpose options with associated pricing
+  // Each option includes both the service name and its price
   final Map<String, bool> _selectedPurposes = {
     "Movie Date\n₱500": false,
     "Family/Event Companion\n₱1,000": false,
@@ -47,7 +50,8 @@ class _ToBookPageState extends State<ToBookPage> {
     "Pet Date\n₱400": false
   };
   
-  // Duration options with pricing
+  // Service pricing data - Duration options with associated costs
+  // Structured format: "{duration description}\n{price}"
   final List<String> _durationOptions = [
     "30 Minutes\n₱150",
     "1 Hour\n₱250",
@@ -57,9 +61,8 @@ class _ToBookPageState extends State<ToBookPage> {
     "Overnight (12 Hours)\n₱2,000"
   ];
 
-  // Remove purpose options as we now use the map keys
-
-  // Update date picker to handle nullable date
+  // Date selection workflow - Calendar date picker with constraints
+  // Limited to future dates within a reasonable booking window
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -87,7 +90,8 @@ class _ToBookPageState extends State<ToBookPage> {
     }
   }
 
-  // Update time picker to handle nullable time
+  // Time selection workflow - Platform-specific time picker
+  // Collects appointment time preferences from the user
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -124,6 +128,9 @@ class _ToBookPageState extends State<ToBookPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F5F2),
+      
+      // Brand-consistent header with distinctive booking page color scheme
+      // Uses green to indicate the "collecting information" stage
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container( // Fixed: replaced comma with parenthesis
@@ -195,6 +202,7 @@ class _ToBookPageState extends State<ToBookPage> {
         ),
       ),
       
+      // Main form area - Multi-field data collection interface
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0), // Reduced padding to allow wider content
@@ -203,7 +211,8 @@ class _ToBookPageState extends State<ToBookPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Wingman card image - made bigger
+                // Visual confirmation - Shows selected wingman to reinforce choice
+                // Maintains context of who is being booked
                 Center(
                   child: Image.asset(
                     widget.wingmanCardImage,
@@ -214,7 +223,8 @@ class _ToBookPageState extends State<ToBookPage> {
                 
                 const SizedBox(height: 24),
                 
-                // Booking form in a wider container
+                // Booking details container - Primary data collection area
+                // Card-based UI creates a form-focused visual container
                 Container(
                   width: MediaQuery.of(context).size.width, // Full width
                   decoration: BoxDecoration(
@@ -233,7 +243,7 @@ class _ToBookPageState extends State<ToBookPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Booking form title
+                      // Section title - Clear form purpose indicator
                       const Text(
                         "Booking Details",
                         style: TextStyle(
@@ -246,7 +256,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 24),
                       
-                      // Location - remove box shadow
+                      // Location field - Text input with validation
+                      // Required field for meeting location information
                       _buildFormField(
                         title: "Location",
                         hintText: "Enter meeting place",
@@ -262,7 +273,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Date field - Updated to handle nullable value
+                      // Date selection field - Calendar popup interface
+                      // Restricts selection to valid booking dates
                       _buildDateField(
                         title: "Date",
                         value: _selectedDate != null
@@ -273,7 +285,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Time field - Updated to handle nullable value
+                      // Time selection field - Time picker interface
+                      // Collects appointment time using platform-specific UI
                       _buildDateField(
                         title: "Time",
                         value: _selectedTime != null
@@ -284,7 +297,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Duration dropdown - Updated to handle nullable value
+                      // Duration selection - Dropdown with pricing options
+                      // Shows time increments with associated costs
                       _buildDropdownField(
                         title: "Duration",
                         value: _selectedDuration,
@@ -301,7 +315,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Purpose of booking as checkboxes
+                      // Purpose selection group - Multi-select checkboxes
+                      // Each option represents a service with associated cost
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -330,7 +345,8 @@ class _ToBookPageState extends State<ToBookPage> {
                       
                       const SizedBox(height: 20),
                       
-                      // Special notes
+                      // Special instructions field - Optional text input
+                      // Allows communication of specific needs or requests
                       _buildFormField(
                         title: "Special Notes",
                         hintText: "Any additional information",
@@ -345,7 +361,8 @@ class _ToBookPageState extends State<ToBookPage> {
                 
                 const SizedBox(height: 32),
                 
-                // Next button with green color
+                // Navigation control - Form submission button
+                // Triggers validation and price calculation before proceeding
                 Container(
                   width: double.infinity,
                   height: 65,
@@ -361,8 +378,9 @@ class _ToBookPageState extends State<ToBookPage> {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
+                      // Form validation workflow - Checks all required fields
                       if (_formKey.currentState!.validate()) {
-                        // Check if date, time, and duration are selected
+                        // Selective validation - Date field required check
                         if (_selectedDate == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -373,6 +391,7 @@ class _ToBookPageState extends State<ToBookPage> {
                           return;
                         }
                         
+                        // Selective validation - Time field required check
                         if (_selectedTime == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -383,6 +402,7 @@ class _ToBookPageState extends State<ToBookPage> {
                           return;
                         }
                         
+                        // Selective validation - Duration field required check
                         if (_selectedDuration == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -393,7 +413,7 @@ class _ToBookPageState extends State<ToBookPage> {
                           return;
                         }
                         
-                        // Get the list of selected purposes
+                        // Multi-selection validation - At least one purpose required
                         final selectedPurposesList = _selectedPurposes.entries
                             .where((entry) => entry.value)
                             .map((entry) => entry.key) // Keep the full string with price
@@ -408,16 +428,17 @@ class _ToBookPageState extends State<ToBookPage> {
                             ),
                           );
                         } else {
-                          // Calculate total price
+                          // Price calculation logic - Dynamic total based on selections
+                          // Combines duration cost with all selected purpose costs
                           int totalPrice = 0;
                           
-                          // Add duration price
+                          // Base rate - Duration component
                           final durationPrice = int.parse(_selectedDuration!.split('\n')[1]
                               .replaceAll('₱', '')
                               .replaceAll(',', ''));
                           totalPrice += durationPrice;
                           
-                          // Add purpose prices
+                          // Additional services - Purpose components
                           for (String purpose in selectedPurposesList) {
                             final purposePrice = int.parse(purpose.split('\n')[1]
                                 .replaceAll('₱', '')
@@ -425,12 +446,8 @@ class _ToBookPageState extends State<ToBookPage> {
                             totalPrice += purposePrice;
                           }
                           
-                          // Remove unused variable
-                          // final purposeNames = selectedPurposesList
-                          //    .map((purpose) => purpose.split('\n')[0])
-                          //    .toList();
-                          
-                          // Navigate to payment page
+                          // Workflow progression - Navigation to payment step
+                          // All form data passed to maintain state consistency
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -491,7 +508,8 @@ class _ToBookPageState extends State<ToBookPage> {
     );
   }
 
-  // Update form field to remove shadow
+  // Form field component - Standardized text input pattern
+  // Creates consistent styling for all text entry fields
   Widget _buildFormField({
     required String title,
     required String hintText,
@@ -536,7 +554,8 @@ class _ToBookPageState extends State<ToBookPage> {
     );
   }
   
-  // Update date field to remove shadow
+  // Interactive field component - Date and time selection pattern
+  // Custom field styling with action triggers for picker dialogs
   Widget _buildDateField({
     required String title,
     required String value,
@@ -583,7 +602,8 @@ class _ToBookPageState extends State<ToBookPage> {
     );
   }
   
-  // Update dropdown field to display prices clearly
+  // Selection component - Styled dropdown with pricing info
+  // Enhanced dropdown that visually separates options and prices
   Widget _buildDropdownField({
     required String title,
     required String? value,
@@ -684,7 +704,8 @@ class _ToBookPageState extends State<ToBookPage> {
     );
   }
 
-  // Add a method to build the purpose checkboxes
+  // Multi-selection component builder - Creates the purpose options
+  // Dynamically generates checkbox rows with visual separation
   List<Widget> _buildPurposeCheckboxes() {
     List<Widget> checkboxes = [];
     

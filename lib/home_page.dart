@@ -3,7 +3,8 @@ import 'package:wingr/to_book_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-// Convert to StatefulWidget to manage page state
+// Main wingman selection page - Core part of the user journey
+// Allows users to browse available wingmen and select one for booking
 class HomePage extends StatefulWidget {
   final String username;
   
@@ -14,7 +15,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // List of profiles with their images
+  // Wingman profiles collection - Contains all available wingmen data
+  // Each profile has name and visual assets (card and details)
   final List<Map<String, String>> _profiles = [
     {
       'name': 'Stephen',
@@ -33,16 +35,15 @@ class _HomePageState extends State<HomePage> {
     },
   ];
   
-  // Current profile index
+  // Navigation state management
   int _currentIndex = 0;
-  
-  // Track navigation direction for animation
   bool _isNavigatingForward = true;
   
-  // Navigate to the next profile
+  // Profile browsing functionality - Forward navigation
+  // Shows the next wingman profile with right-to-left animation
   void _nextProfile() {
     setState(() {
-      _isNavigatingForward = true;  // Set direction for animation
+      _isNavigatingForward = true;
       if (_currentIndex < _profiles.length - 1) {
         _currentIndex++;
       } else {
@@ -51,7 +52,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
   
-  // Navigate to the previous profile
+  // Profile browsing functionality - Backward navigation
+  // Shows the previous wingman profile with left-to-right animation
   void _previousProfile() {
     setState(() {
       _isNavigatingForward = false;  // Set direction for animation
@@ -63,7 +65,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Add a method to check for active bookings
+  // Business logic - Active booking verification
+  // Prevents multiple concurrent bookings by the same user
   Future<bool> _hasActiveBookings() async {
     final prefs = await SharedPreferences.getInstance();
     final String? bookingsJson = prefs.getString('bookings');
@@ -72,7 +75,7 @@ class _HomePageState extends State<HomePage> {
       try {
         final List<dynamic> allBookings = json.decode(bookingsJson);
         
-        // Find any active bookings for this user (not cancelled, not completed)
+        // Query for any non-completed, non-cancelled bookings for the current user
         final activeBookings = allBookings.where((booking) => 
           booking['username'] == widget.username && 
           booking['cancelled'] != true &&
@@ -85,18 +88,19 @@ class _HomePageState extends State<HomePage> {
       }
     }
     
-    return false; // Default: no active bookings
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the current profile
+    // Current profile being displayed
     final currentProfile = _profiles[_currentIndex];
     
     return Scaffold(
-      // Use a solid color background as fallback for the missing image
+      // Brand-specific visual styling
       backgroundColor: const Color(0xFFF9F5F2),
-      // Use decoration container for appBar to maintain its styling
+      
+      // Custom AppBar with consistent brand elements
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
@@ -183,19 +187,18 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       
-      // Replace Container with background image with a safer implementation
+      // Main content area with layered design pattern
       body: Stack(
         children: [
-          // Background layer - Try to load image but fallback to solid color
+          // Base layer - Background with adaptable image loading
           Container(
             decoration: BoxDecoration(
-              // Use a solid color that matches your app's theme
               color: const Color(0xFFF9F5F2),
               image: _tryLoadBackgroundImage(),
             ),
           ),
 
-          // Main content container
+          // Middle layer - Scrollable profile content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
             child: SingleChildScrollView(
@@ -203,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title text "Pick Your Wingman"
+                  // Header text
                   const Text(
                     "Pick Your Wingman",
                     style: TextStyle(
@@ -218,11 +221,12 @@ class _HomePageState extends State<HomePage> {
                   
                   const SizedBox(height: 24),
                   
-                  // Profile card image with slide animation
+                  // Profile card with animated transitions
+                  // Uses direction-aware animations based on navigation
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (Widget child, Animation<double> animation) {
-                      // Slide animation based on navigation direction
+                      // Custom slide animation based on navigation direction
                       return SlideTransition(
                         position: Tween<Offset>(
                           begin: _isNavigatingForward 
@@ -251,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                   
                   const SizedBox(height: 16),
                   
-                  // Profile about image with slide animation
+                  // Profile details with matching animation
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (Widget child, Animation<double> animation) {
@@ -282,14 +286,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   
-                  // Add extra space at bottom
+                  // Bottom spacing for navigation controls
                   const SizedBox(height: 160),
                 ],
               ),
             ),
           ),
           
-          // Heart and arrows positioned above bottom nav bar
+          // Top layer - Interactive navigation controls
+          // Fixed positioning to ensure visibility regardless of scroll position
           Positioned(
             left: 0,
             right: 0,
@@ -299,9 +304,9 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left arrow button - Now with previous functionality
+                  // Left navigation - Previous profile
                   GestureDetector(
-                    onTap: _previousProfile, // Navigate to previous profile
+                    onTap: _previousProfile,
                     child: Image.asset(
                       'images/left_button.png',
                       width: 70,
@@ -316,14 +321,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   
-                  // Center - Heart image with booking navigation - Update this section
+                  // Center - Primary action button with booking flow
+                  // Contains business logic validation for concurrent bookings
                   GestureDetector(
                     onTap: () async {
-                      // Check for active bookings first
+                      // Business rule: Users can only have one active booking
                       bool hasActive = await _hasActiveBookings();
                       
                       if (hasActive) {
-                        // Show a message that user already has an active booking
+                        // Warning feedback for business rule violation
                         if (mounted) {
                           // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -347,7 +353,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                       } else {
-                        // No active bookings, proceed with navigation to booking page
+                        // Happy path - Proceed to booking flow
                         Navigator.push(
                           // ignore: use_build_context_synchronously
                           context,
@@ -376,9 +382,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   
-                  // Right arrow button - Now with next functionality
+                  // Right navigation - Next profile
                   GestureDetector(
-                    onTap: _nextProfile, // Navigate to next profile
+                    onTap: _nextProfile,
                     child: Image.asset(
                       'images/right_button.png',
                       width: 70,
@@ -401,7 +407,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
   
-  // Try to load the background image but handle error gracefully
+  // Helper method - Resilient asset loading strategy
+  // Graceful degradation when background image is unavailable
   DecorationImage? _tryLoadBackgroundImage() {
     try {
       return const DecorationImage(
@@ -414,7 +421,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
   
-  // Custom pixelated button
+  // UI Component - Custom button with pixel art aesthetic
+  // Provides fallback for when image assets aren't available
   Widget _buildPixelatedButton({required IconData icon, required VoidCallback onPressed}) {
     return GestureDetector(
       onTap: onPressed,

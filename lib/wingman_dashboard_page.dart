@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'receipt_page.dart';
 import 'package:intl/intl.dart';
 
+// Professional dashboard - Service provider's main interface
+// Enables wingmen to manage their bookings, view schedules, and track earnings
 class WingmanDashboardPage extends StatefulWidget {
   final String wingmanName;
   final String wingmanImage;
@@ -22,19 +24,26 @@ class WingmanDashboardPage extends StatefulWidget {
 }
 
 class _WingmanDashboardPageState extends State<WingmanDashboardPage> with TickerProviderStateMixin {
+  // Dual interface system - Tab controller manages navigation between views
+  // "To Go" shows upcoming work and "History" displays completed bookings
   late TabController _tabController;
-  CalendarFormat _calendarFormat = CalendarFormat.week; // Changed from CalendarFormat.month to week
+  
+  // Calendar display configuration - Controls visualization density
+  // Week view for default compact display of current scheduling
+  CalendarFormat _calendarFormat = CalendarFormat.week;
+  
+  // Calendar navigation state - Tracks current view date and selections
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   
-  // Booking data
+  // Data organization - Separates bookings by temporal status
+  // Upcoming for action items, past for financial tracking
   List<Map<String, dynamic>> _upcomingBookings = [];
   List<Map<String, dynamic>> _pastBookings = [];
   
-  // Events for calendar
+  // Calendar integration - Visual representation of booking distribution
+  // Marks dates that contain scheduled appointments
   Map<DateTime, List<dynamic>> _events = {};
-  
-  // Storage key
   
   @override
   void initState() {
@@ -49,7 +58,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     super.dispose();
   }
   
-  // Load bookings from SharedPreferences
+  // Data pipeline - Retrieves and processes wingman's assignments
+  // Classifies bookings based on status and timeframe
   Future<void> _loadBookings() async {
     final prefs = await SharedPreferences.getInstance();
     final String? bookingsJson = prefs.getString('bookings');
@@ -125,9 +135,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     }
   }
   
-  // Mark booking as completed
-  
-  // Cancel booking - updated with confirmation dialog and message
+  // Booking management - Cancellation workflow with client communication
+  // Updates booking status and notifies users of changes
   void _cancelBooking(int index, bool isPast) async {
     // Show confirmation dialog with message text field
     final TextEditingController messageController = TextEditingController();
@@ -228,7 +237,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     }
   }
   
-  // Method to store a notification for the user
+  // Client notification system - Communication channel with users
+  // Creates persistent alerts that appear when clients log in
   Future<void> _storeNotificationForUser({
     required String username, 
     required String message,
@@ -263,8 +273,6 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     await prefs.setString('user_notifications', json.encode(notifications));
   }
   
-  // Delete booking from history
-
   // View booking receipt
   void _viewReceipt(Map<String, dynamic> booking) {
     Navigator.push(
@@ -278,13 +286,15 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Get events for a day
+  // Calendar event access - Associates dates with bookings
+  // Enables visualization of work schedule on calendar
   List<dynamic> _getEventsForDay(DateTime day) {
     final normalizedDay = DateTime(day.year, day.month, day.day);
     return _events[normalizedDay] ?? [];
   }
 
-  // Helper method to update a booking in storage
+  // Data persistence - Updates booking records in storage
+  // Maintains consistent state between UI and backend
   Future<void> _updateBookingInStorage(Map<String, dynamic> booking) async {
     final prefs = await SharedPreferences.getInstance();
     final String? bookingsJson = prefs.getString('bookings');
@@ -459,7 +469,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Build the To Go tab with calendar and upcoming bookings
+  // Upcoming work interface - Schedule management and booking details
+  // Combines calendar view with actionable booking cards
   Widget _buildToGoTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -850,7 +861,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Build the History tab with past bookings in table format
+  // Performance metrics interface - Financial and activity reporting
+  // Displays earnings summary and booking history in tabular format
   Widget _buildHistoryTab() {
     // Calculate total earnings (excluding cancelled bookings)
     int totalEarnings = 0;
@@ -1108,7 +1120,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
 
-  // Enhanced booking card with modern styling
+  // Booking detail component - Interactive card for individual assignments
+  // Contains all relevant information and action controls
   Widget _buildBookingCard(Map<String, dynamic> booking, int index, bool isPast) {
     final DateTime bookingDate = DateTime.parse(booking['date']);
     final String formattedDate = DateFormat('EEE, MMM d, yyyy').format(bookingDate);
@@ -1357,7 +1370,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
 
-  // Enhanced history table row with better styling
+  // History entry component - Compact representation of past work
+  // Efficiently displays key information for completed bookings
   Widget _buildHistoryTableRow(Map<String, dynamic> booking, int index) {
     final DateTime bookingDate = DateTime.parse(booking['date']);
     final String formattedDate = DateFormat('MMM d, yyyy').format(bookingDate);
@@ -1462,7 +1476,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Improved empty state with illustration
+  // Empty state pattern - User guidance for sections without data
+  // Provides context-specific messaging and visual cues
   Widget _buildEmptyState(String message) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 40),
@@ -1508,7 +1523,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
 
-  // Show local storage viewer dialog
+  // Development tool - Storage inspection and debugging interface
+  // Provides direct access to application data during development
   void _showLocalStorageViewer() async {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getKeys().map((key) {
@@ -1622,7 +1638,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     }
   }
   
-  // Confirm and delete storage
+  // Data management safeguard - Confirmation workflow for deletions
+  // Prevents accidental data loss during development
   void _confirmDeleteStorage(String key, BuildContext context) {
     showDialog(
       context: context,
@@ -1673,7 +1690,8 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
     );
   }
   
-  // Confirm and delete all storage
+  // Application reset capability - Complete data clearing mechanism
+  // Allows resetting to initial state for testing scenarios
   void _confirmDeleteAllStorage(BuildContext context) {
     showDialog(
       context: context,

@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'receipt_page.dart';
 
+// Booking Page handles the active bookings for users
+// Displays all non-cancelled, non-completed bookings for the current user
 class BookingPage extends StatefulWidget {
   final String username;
 
@@ -17,6 +19,7 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  // State management for user's active bookings
   List<Map<String, dynamic>> _bookings = [];
   bool _isLoading = true;
 
@@ -26,6 +29,8 @@ class _BookingPageState extends State<BookingPage> {
     _loadBookings();
   }
 
+  // Data retrieval - Loads active bookings from persistent storage
+  // Filters bookings specific to the current user
   Future<void> _loadBookings() async {
     setState(() {
       _isLoading = true;
@@ -38,19 +43,20 @@ class _BookingPageState extends State<BookingPage> {
       try {
         final List<dynamic> allBookings = json.decode(bookingsJson);
         
-        // Filter bookings for current user and don't show cancelled OR completed bookings
+        // Filtering logic - only active bookings for current user
         _bookings = allBookings
             .where((booking) => 
                 booking['username'] == widget.username && 
                 booking['cancelled'] != true &&
-                booking['completed'] != true) // Filter out cancelled AND completed bookings
+                booking['completed'] != true)
             .map((booking) => Map<String, dynamic>.from(booking))
             .toList();
         
+        // Sort by most recent bookings first
         _bookings.sort((a, b) {
           final DateTime dateA = DateTime.parse(a['date']);
           final DateTime dateB = DateTime.parse(b['date']);
-          return dateB.compareTo(dateA); // Sort by date descending
+          return dateB.compareTo(dateA);
         });
       } catch (e) {
         debugPrint('Error loading bookings: $e');
@@ -67,6 +73,8 @@ class _BookingPageState extends State<BookingPage> {
     }
   }
 
+  // Booking cancellation workflow
+  // Updates booking status in storage and refreshes the view
   Future<void> _cancelBooking(int index) async {
     final booking = _bookings[index];
     booking['cancelled'] = true;
@@ -94,7 +102,8 @@ class _BookingPageState extends State<BookingPage> {
     }
   }
 
-  // Add method to mark booking as completed
+  // Booking completion workflow
+  // Marks a booking as completed and updates storage
   Future<void> _completeBooking(int index) async {
     final booking = _bookings[index];
     booking['completed'] = true;
@@ -116,7 +125,7 @@ class _BookingPageState extends State<BookingPage> {
         
         await prefs.setString('bookings', json.encode(allBookings));
         
-        // Show success message
+        // User feedback for successful completion
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -133,6 +142,7 @@ class _BookingPageState extends State<BookingPage> {
     }
   }
 
+  // Navigation to receipt details
   void _viewReceipt(Map<String, dynamic> booking) {
     Navigator.push(
       context,
@@ -145,6 +155,7 @@ class _BookingPageState extends State<BookingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Main UI structure with app branding
       backgroundColor: const Color(0xFFF9F5F2),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
@@ -168,7 +179,7 @@ class _BookingPageState extends State<BookingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Left - Logo and title
+                    // Left - Logo and title - Brand identity
                     Row(
                       children: [
                         Image.asset(
@@ -189,7 +200,7 @@ class _BookingPageState extends State<BookingPage> {
                       ],
                     ),
                     
-                    // Right - Status circles
+                    // Right - Status circles - Visual consistency elements
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -232,22 +243,23 @@ class _BookingPageState extends State<BookingPage> {
         ),
       ),
       
+      // Main content area with conditional rendering based on data state
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator()) // Loading indicator
           : _bookings.isEmpty
-              ? _buildEmptyState()
-              : ListView.builder(
+              ? _buildEmptyState() // Empty state for no bookings
+              : ListView.builder( // List of active bookings
                   padding: const EdgeInsets.all(16),
                   itemCount: _bookings.length,
                   itemBuilder: (context, index) {
                     return _buildBookingCard(_bookings[index], index);
                   },
                 ),
-      
-      // Removed FloatingActionButton (refresh button)
     );
   }
 
+  // Empty state UI component
+  // Provides visual feedback when user has no active bookings
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -280,6 +292,8 @@ class _BookingPageState extends State<BookingPage> {
     );
   }
 
+  // Booking card UI component
+  // Displays booking details and action buttons
   Widget _buildBookingCard(Map<String, dynamic> booking, int index) {
     final DateTime bookingDate = DateTime.parse(booking['date']);
     final String formattedDate = DateFormat('EEE, MMM d, yyyy').format(bookingDate);
@@ -289,7 +303,7 @@ class _BookingPageState extends State<BookingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Wingman card image (now outside container)
+        // Wingman preview - Visual identification of booking
         ClipRRect(
           borderRadius: BorderRadius.circular(14),
           child: Container(
@@ -297,15 +311,15 @@ class _BookingPageState extends State<BookingPage> {
             color: Colors.white, // Add white background to prevent transparency issues
             child: Image.asset(
               booking['wingmanCardImage'] ?? 'images/stephen_card.png',
-              fit: BoxFit.contain, // Changed from cover to contain to show entire image
-              height: null, // Remove fixed height to adapt to image aspect ratio
+              fit: BoxFit.contain,
+              height: null,
             ),
           ),
         ),
         
-        const SizedBox(height: 16), // Increased spacing
+        const SizedBox(height: 16),
         
-        // New separate card for booking details
+        // Booking details card - Structured information display
         Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
@@ -324,7 +338,7 @@ class _BookingPageState extends State<BookingPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Changed from Wingman name to User's Booking with Cancel button
+              // Header with booking identification and cancel option
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -413,7 +427,7 @@ class _BookingPageState extends State<BookingPage> {
               
               const SizedBox(height: 16),
               
-              // Date field - Now in its own row
+              // Date field - Structured data presentation
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -453,7 +467,7 @@ class _BookingPageState extends State<BookingPage> {
               
               const SizedBox(height: 16),
               
-              // Time field - Now in its own row
+              // Time field - Structured data presentation
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -493,11 +507,11 @@ class _BookingPageState extends State<BookingPage> {
               
               const SizedBox(height: 24),
               
-              // Action buttons with new styling
+              // Action buttons - User interaction controls
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // View Receipt button in light blue (#59ffff)
+                  // View Receipt button - Navigates to detailed receipt
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.only(right: 8),
@@ -535,7 +549,8 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ),
                   
-                  // Always show Finished button for active bookings (not completed)
+                  // Finished button - Only shown for active bookings
+                  // Allows user to mark booking as completed
                   if (!isCompleted)
                     Expanded(
                       child: Container(
@@ -579,12 +594,13 @@ class _BookingPageState extends State<BookingPage> {
           ),
         ),
         
-        const SizedBox(height: 16), // Space between cards
+        const SizedBox(height: 16),
       ],
     );
   }
 
-  // Add confirmation dialog method
+  // Confirmation dialog for cancellation
+  // Provides user with confirmation before proceeding with cancellation
   void _showCancelConfirmationDialog(int index) {
     showDialog(
       context: context,
@@ -623,7 +639,7 @@ class _BookingPageState extends State<BookingPage> {
                   Navigator.of(context).pop();
                   _cancelBooking(index);
                   
-                  // Show success message
+                  // User feedback for successful cancellation
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Booking has been cancelled'),

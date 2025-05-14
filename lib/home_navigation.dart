@@ -5,6 +5,8 @@ import 'profile_page.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Main navigation container that handles app-wide navigation
+// Creates a unified experience with animated tab switching between key sections
 class HomeNavigation extends StatefulWidget {
   final String username;
   
@@ -15,9 +17,12 @@ class HomeNavigation extends StatefulWidget {
 }
 
 class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProviderStateMixin {
-  int _currentIndex = 1; // Default to home (center) tab
+  // Core app navigation structure with Home as default central tab
+  int _currentIndex = 1; 
   late List<Widget> _pages;
   late PageController _pageController;
+  
+  // Animation system for tab transitions
   late AnimationController _animationController;
   late List<Animation<double>> _tabAnimations;
   
@@ -25,13 +30,13 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
   void initState() {
     super.initState();
     
-    // Initialize animations
+    // Tab selection animations configuration
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
     
-    // Create animations for each tab
+    // Scale animations for each tab (active tabs grow, inactive tabs shrink)
     _tabAnimations = List.generate(3, (index) => 
       Tween<double>(
         begin: index == 1 ? 1.0 : 0.7, // Start with home tab active
@@ -39,24 +44,27 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
       ).animate(_animationController)
     );
     
-    // Initialize pages and page controller
+    // Main app sections configuration
     _pages = [
-      BookingPage(username: widget.username),
-      HomePage(username: widget.username),
-      ProfilePage(username: widget.username),
+      BookingPage(username: widget.username),  // Left tab - Active bookings
+      HomePage(username: widget.username),     // Center tab - Booking creation
+      ProfilePage(username: widget.username),  // Right tab - User profile
     ];
     
+    // Page transition controller
     _pageController = PageController(
-      initialPage: 1,
-      keepPage: true,
+      initialPage: 1,  // Start on home page (center)
+      keepPage: true,  // Maintain page state when switching
     );
 
-    // Check for notifications after widget is fully built
+    // User notification system - checks for user alerts after widget initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForNotifications();
     });
   }
   
+  // Tab selection animation handler
+  // Updates scale animations when user changes tabs
   void _updateTabAnimations(int selectedIndex) {
     for (int i = 0; i < _tabAnimations.length; i++) {
       _tabAnimations[i] = Tween<double>(
@@ -81,10 +89,14 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6FF52), // Yellow background
+      // Brand consistent background color
+      backgroundColor: const Color(0xFFF6FF52),
+      
+      // Main content area with page switching functionality
+      // Disabled swipe navigation for more controlled transitions
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(), // Disable swiping
+        physics: const NeverScrollableScrollPhysics(),
         children: _pages,
         onPageChanged: (index) {
           setState(() {
@@ -93,7 +105,8 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
         },
       ),
       
-      // Floating navigation bar
+      // Custom navigation bar with pixel-art aesthetic
+      // Floating design with shadows and consistent border treatment
       floatingActionButton: Container(
         margin: const EdgeInsets.only(bottom: 20),
         child: Container(
@@ -114,8 +127,13 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              // Booking tab - Left position
               _buildTabItem(0, Icons.calendar_today, 'Bookings'),
+              
+              // Home tab - Center position with distinctive styling
               _buildCenterTabItem(1, Icons.home, 'Home'),
+              
+              // Profile tab - Right position
               _buildTabItem(2, Icons.person, 'Profile'),
             ],
           ),
@@ -125,6 +143,8 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
     );
   }
 
+  // Standard tab item builder - Used for Bookings and Profile tabs
+  // Features scale animation and conditional styling based on selection state
   Widget _buildTabItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
     
@@ -167,6 +187,8 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
     );
   }
 
+  // Center tab item with enhanced visual importance
+  // Features larger size, different color and raised appearance
   Widget _buildCenterTabItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
     
@@ -225,7 +247,8 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
     );
   }
 
-  // Check for notifications for the current user
+  // Notification system - Checks and displays user alerts
+  // Retrieves personal notifications from persistent storage
   void _checkForNotifications() async {
     final prefs = await SharedPreferences.getInstance();
     final String? notificationsJson = prefs.getString('user_notifications');
@@ -234,14 +257,14 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
       try {
         final List<dynamic> allNotifications = json.decode(notificationsJson);
         
-        // Filter unread notifications for current user
+        // Filter for current user's unread notifications
         final userNotifications = allNotifications
             .where((notification) => 
                 notification['username'] == widget.username && 
                 notification['read'] == false)
             .toList();
         
-        // Show notifications if any exist
+        // Display notification if available
         if (userNotifications.isNotEmpty) {
           // Show the first unread notification
           _showNotificationDialog(userNotifications[0]);
@@ -254,7 +277,7 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
             }
           }
           
-          // Save updated notifications
+          // Update persistent storage
           await prefs.setString('user_notifications', json.encode(allNotifications));
         }
       } catch (e) {
@@ -263,7 +286,8 @@ class _HomeNavigationState extends State<HomeNavigation> with SingleTickerProvid
     }
   }
   
-  // Show notification dialog
+  // Notification display UI
+  // Shows alert dialog with booking update information
   void _showNotificationDialog(Map<String, dynamic> notification) {
     showDialog(
       context: context,
