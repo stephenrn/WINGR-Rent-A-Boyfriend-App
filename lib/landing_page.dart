@@ -113,7 +113,7 @@ class LandingPage extends StatelessWidget {
                       "WINGR",
                       style: TextStyle(
                         fontFamily: 'Futura',
-                        fontSize: 130, // Increased from 100
+                        fontSize: 120, // Increased from 100
                         fontWeight: FontWeight.bold,
                         letterSpacing: 3.0, // Increased from 2.0
                         color: Colors.black,

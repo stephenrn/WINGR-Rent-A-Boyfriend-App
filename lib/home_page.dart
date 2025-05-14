@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 130,
+            bottom: 120,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
