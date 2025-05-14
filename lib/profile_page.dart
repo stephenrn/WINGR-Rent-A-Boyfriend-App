@@ -99,90 +99,52 @@ class ProfilePage extends StatelessWidget {
             
             const SizedBox(height: 32),
             
-            // Account management options - User control panel
-            // Provides access to settings, help, and authentication controls
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.black, width: 2.5),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(0, 6),
-                      blurRadius: 0,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(17.5), // Account for border width
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      // Settings entry point - Configuration access
-                      _buildProfileOption(context, Icons.settings, "Settings"),
-                      const Divider(height: 1, thickness: 1),
-                      
-                      // Help system access - User support
-                      _buildProfileOption(context, Icons.help_outline, "Help"),
-                      const Divider(height: 1, thickness: 1),
-                      
-                      // Authentication action - Session termination
-                      // Returns user to landing page and clears navigation stack
-                      _buildProfileOption(
-                        context, 
-                        Icons.logout, 
-                        "Log Out", 
-                        isLogout: true,
-                        onTap: () {
-                          // Session termination and navigation reset
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => const LandingPage()),
-                            (route) => false, // Remove all routes from stack
-                          );
-                        },
-                      ),
-                    ],
+            // Account management option - Authentication control
+            // Simplified to contain just the logout functionality
+            Container(
+              height: 80, // Reduced height since we only have one option now
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(0, 6),
+                    blurRadius: 0,
                   ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(17.5), // Account for border width
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                    size: 28,
+                  ),
+                  title: const Text(
+                    "Log Out",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  onTap: () {
+                    // Session termination and navigation reset
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const LandingPage()),
+                      (route) => false, // Remove all routes from stack
+                    );
+                  },
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-  
-  // UI component builder - Creates consistent option tiles
-  // Visual pattern for all menu options with appropriate styling
-  Widget _buildProfileOption(
-    BuildContext context,
-    IconData icon, 
-    String title, 
-    {bool isLogout = false, VoidCallback? onTap}
-  ) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isLogout ? Colors.red : Colors.black,
-        size: 28,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: isLogout ? Colors.red : Colors.black,
-        ),
-      ),
-      trailing: isLogout ? null : const Icon(Icons.chevron_right),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      onTap: onTap ?? () {
-        // Default handler for options without specific handlers
-      },
     );
   }
 }
