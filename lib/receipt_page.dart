@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:math' as math;
 
 class ReceiptPage extends StatelessWidget {
   final Map<String, dynamic> booking;
@@ -94,6 +93,7 @@ class ReceiptPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10), // Simple rounded corners
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
@@ -465,6 +465,7 @@ class ReceiptPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
+            // ignore: prefer_interpolation_to_compose_strings
             label + ":",
             style: const TextStyle(
               // Removed fontFamily: 'Courier'
@@ -493,6 +494,7 @@ class ReceiptPage extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
+              // ignore: prefer_interpolation_to_compose_strings
               "- " + name,
               style: const TextStyle(
                 // Removed fontFamily: 'Courier'

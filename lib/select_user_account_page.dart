@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'home_navigation.dart';
-import 'package:wingr/to_book_page.dart'; // Import ToBookPage here
+// Import ToBookPage here
 
 class SelectUserAccountPage extends StatefulWidget {
   const SelectUserAccountPage({super.key});
@@ -444,6 +444,7 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     final String? usersJson = prefs.getString('users');
     
     showDialog(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
@@ -553,18 +554,6 @@ class _SelectUserAccountPageState extends State<SelectUserAccountPage> {
     );
   }
 
-  void _navigateToBookPage(BuildContext context, String wingmanName, String wingmanImage, String username) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ToBookPage(
-          wingmanName: wingmanName,
-          wingmanCardImage: wingmanImage,
-          username: username,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

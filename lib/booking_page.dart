@@ -286,9 +286,6 @@ class _BookingPageState extends State<BookingPage> {
     final String formattedTime = booking['time'] ?? '';
     final bool isCompleted = booking['completed'] == true;
     
-    // Check if booking date is in the past
-    final bool isPastBooking = DateTime.now().isAfter(bookingDate);
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

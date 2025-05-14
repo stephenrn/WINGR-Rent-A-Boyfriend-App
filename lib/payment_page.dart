@@ -5,7 +5,7 @@ import 'package:wingr/home_navigation.dart';
 import 'dart:convert';
 
 import 'package:wingr/receipt_page.dart';
-import 'package:wingr/booking_page.dart'; // Import BookingPage
+// Import BookingPage
 
 class PaymentPage extends StatefulWidget {
   final String wingmanName;

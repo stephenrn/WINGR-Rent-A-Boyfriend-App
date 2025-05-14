@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wingr/to_book_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:wingr/booking_page.dart'; // Import for viewing active bookings
 
 // Convert to StatefulWidget to manage page state
 class HomePage extends StatefulWidget {
@@ -326,6 +325,7 @@ class _HomePageState extends State<HomePage> {
                       if (hasActive) {
                         // Show a message that user already has an active booking
                         if (mounted) {
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Row(
@@ -349,6 +349,7 @@ class _HomePageState extends State<HomePage> {
                       } else {
                         // No active bookings, proceed with navigation to booking page
                         Navigator.push(
+                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(
                             builder: (context) => ToBookPage(

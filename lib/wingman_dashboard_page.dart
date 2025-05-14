@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +35,6 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
   Map<DateTime, List<dynamic>> _events = {};
   
   // Storage key
-  String get _storageKey => 'wingman_bookings_${widget.wingmanName.toLowerCase()}';
   
   @override
   void initState() {
@@ -125,22 +126,6 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
   }
   
   // Mark booking as completed
-  void _completeBooking(int index) async {
-    final booking = _upcomingBookings[index];
-    booking['completed'] = true;
-    
-    await _updateBookingInStorage(booking);
-    _loadBookings();
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Booking marked as completed'),
-          backgroundColor: Color(0xFF52FF68),
-        ),
-      );
-    }
-  }
   
   // Cancel booking - updated with confirmation dialog and message
   void _cancelBooking(int index, bool isPast) async {
@@ -279,23 +264,6 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
   }
   
   // Delete booking from history
-  void _deleteBooking(int index) async {
-    // We just mark it as deleted in this implementation
-    final booking = _pastBookings[index];
-    booking['deleted'] = true;
-    
-    await _updateBookingInStorage(booking);
-    _loadBookings();
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Booking deleted from history'),
-          backgroundColor: Colors.grey,
-        ),
-      );
-    }
-  }
 
   // View booking receipt
   void _viewReceipt(Map<String, dynamic> booking) {
@@ -567,6 +535,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                 decoration: BoxDecoration(
+                                  // ignore: deprecated_member_use
                                   color: const Color(0xFFF6FF52).withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(color: Colors.black, width: 1.5),
@@ -1678,6 +1647,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                 await prefs.remove(key);
                 
                 // Close the confirmation dialog
+                // ignore: use_build_context_synchronously
                 Navigator.of(dialogContext).pop();
                 
                 // Close the storage viewer dialog to refresh
@@ -1728,6 +1698,7 @@ class _WingmanDashboardPageState extends State<WingmanDashboardPage> with Ticker
                 await prefs.clear(); // Clear all local storage
                 
                 // Close the confirmation dialog
+                // ignore: use_build_context_synchronously
                 Navigator.of(dialogContext).pop();
                 
                 // Close the storage viewer dialog
